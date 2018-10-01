@@ -1,51 +1,56 @@
 program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt;
 type
+    pago_en_pesos_y_peso_actual = array[1..2,1..2] of Real;
+    cantidad_repeticiones = array[1..4,1..50] of Integer;
 
-	gimnasio record 								{Declaracion de los registros para los archivos}
+	gimnasio = record 								{Declaracion de los registros para los archivos}
 		nombre,direccion: String[30];
-		valor-cuota: Real;
-		valor-nutricionista: Real;
-		valor-personal-trainer: Real;
+		valor_cuota: Real;
+		valor_nutricionista: Real;
+		valor_personal_trainer: Real;
 	end;
 
-	actividades record
-		codigo-actividad: Integer;
-		descripcion-actividad: String[30];
+	actividades = record
+		codigo_actividad: Integer;
+		descripcion_actividad: String[30];
 	end;
 
-	dias-y-actividades record
+	dias_y_actividades = record
 		dia: Integer;
 		hora: String[5];
-		codigo-actividad: Integer;
+		codigo_actividad: Integer;
 	end;
 
-	ejercicios-x-rutina record
-		codigo-ejercicio: Integer;
-		descripcion-rutina: String[30];
+	ejercicios_x_rutina = record
+		codigo_ejercicio: Integer;
+		descripcion_rutina: String[30];
 	end;
 
-	clientes record
+	clientes = record
 		dni: Integer;
-		nombre-y-apellido: String[30];
-		rutina-sn: Char;
-		nutri-sn: Char;
-		personal-sn: Char;
-		pago-en-pesos_+_peso-actual: array[1..2,1..2] of Real;
+		nombre_y_apellido: String[30];
+		rutina_sn: Char;
+		nutri_sn: Char;
+		personal_sn: Char;
+		pago_en_pesos_y_peso_actual: pago_en_pesos_y_peso_actual;
 	end;
 
-	rutinasxclientes record
+	rutinasxclientes = record
 		dni: String[8];
 		mes: Integer;
 		anio: Integer;
-		cantidad-repeticiones: array[1..4,1..50] of Integer;
-		borrado-logico: Boolean;
+		cantidad_repeticiones: cantidad_repeticiones;
+		borrado_logico: Boolean;
 	end;
 var
-	repet: cantidad-repeticiones;
-	pagoypeso: pago-en-pesos_+_peso-actual;
+	repet: cantidad_repeticiones;
+	pagoypeso: pago_en_pesos_y_peso_actual;
+
+
 
 
 begin
 	{Menu/Programa princial}
+
 end.
