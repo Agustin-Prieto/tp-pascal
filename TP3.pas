@@ -47,10 +47,41 @@ var
 	repet: cantidad_repeticiones;
 	pagoypeso: pago_en_pesos_y_peso_actual;
 
+procedure menu;
+var
+   op:Integer;
+begin
+    writeln('Menu de opciones');
+    writeln('1) ABM');
+    writeln('2) Clientes');
+    writeln('3) Rutinas por clientes');
+    writeln('4) Listado de dias y horarios');
+    writeln('5) Recaudacion');
+    writeln('6) Reiniciar (blanqueo)');
 
+    repeat
+       readln(op);
+    until (op >=1) and (op <=6);
 
+    while op <> 7 do
+      begin
+          case op of
+             1: writeln('Texto de prueba');
+             2: writeln('Texto de prueba');
+             3: writeln('Texto de prueba');
+             4: writeln('Texto de prueba');
+             5: writeln('Texto de prueba');
+             6: writeln('Texto de prueba');
+          end;
+
+          repeat
+             readln(op);
+          until (op >=1) and (op <= 6);
+      end;
+end;
 
 begin
 	{Menu/Programa princial}
-
+    menu;
+    readkey
 end.
