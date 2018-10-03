@@ -16,7 +16,7 @@ type
 		descripcion_actividad: String[30];
 	end;
 
-	dias_y_actividades = record
+	dias_y_horarios = record
 		dia: Integer;
 		hora: String[5];
 		codigo_actividad: Integer;
@@ -36,13 +36,21 @@ type
 		pago_en_pesos_y_peso_actual: pago_en_pesos_y_peso_actual;
 	end;
 
-	rutinasxclientes = record
+	rutinas_x_clientes = record
 		dni: String[8];
 		mes: Integer;
 		anio: Integer;
 		cantidad_repeticiones: cantidad_repeticiones;
 		borrado_logico: Boolean;
 	end;
+
+    gim = file of gimnasio;
+    act = file of actividades;
+    d_y_h = file of dias_y_horarios;
+    eje_x_rut = file of ejercicios_x_rutina;
+    cli = file of clientes;
+    rut_x_cli = file of rutinas_x_clientes;
+
 var
 	repet: cantidad_repeticiones;
 	pagoypeso: pago_en_pesos_y_peso_actual;
