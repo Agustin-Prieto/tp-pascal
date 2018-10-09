@@ -1,13 +1,7 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
 program tp3(input,output);  										{Direccion de los archivos: C:\Tp3\TP3.pas}
-uses crt;
-=======
-program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt, sysutils;
->>>>>>> abm
 type
-    pagoypeso= array[1..2,1..2] of Real;
+    pagoypeso= array[1..2,1..12] of Real;
     cantidadrepet = array[1..4,1..50] of Integer;
 
 	gimnasio = record 												{Declaracion de los registros para los archivos}
@@ -34,7 +28,7 @@ type
 	end;
 
 	clientes = record
-		dni: Integer;
+		dni: string[20];
 		nombre_y_apellido: String[30];
 		rutina_sn: Char;
 		nutri_sn: Char;
@@ -58,29 +52,33 @@ type
     r = file of rutinas_x_clientes;
 
 var
-	gim:g;
+    gim:g;
 	act:a;
 	dia_y_hora:d;
 	ejexrut:e;
 	cli:c;
 	rutxcli:r;
 
-function dicotomica(a:c;b:string): integer;
+
+function dicotomica(a:string[20]): integer;    {Busqueda dicotomica, si el resultado devuevle un "1" quiere decir que no se encontro, en cambio
+                                                si es "0", significa que si encontro el dni buscado}
+
 var
-sup,inf,med:integer;
-band:boolean;
+   b:clientes;
+   sup,inf,med:integer;
+   band:boolean;
 begin
-     sup:=filesize(a)-1;
+     sup:=filesize(cli)-1;
      inf:=0;
      band:=false;
      while (band= false) and (inf <= sup) do
      begin
           med:= (inf+sup)div 2;
           seek(cli,med);
-          read(c,clientes);
-          if clientes.dni <> b then
+          read(cli,b);
+          if a <> b.dni then
              begin
-                  if clientes.dni > b then
+                  if b.dni > a then
                      begin
                           sup:=med-1
                      end
@@ -93,7 +91,7 @@ begin
               begin
                    band:=true
               end;
-     if clientes.dni = b then
+     if a = b.dni then
         begin
               dicotomica:=0
         end
@@ -103,35 +101,55 @@ begin
          end;
 
 end;
+end;
 
 
-procedure busqueda_cliente();
+procedure busqueda_cliente();                                       {Se busca el cliente mediante una funcion dicotomica}
 var
-   dni:string;
+   p:pagoypeso;
+   r:rutinas_x_clientes;
+   clien:clientes;
+   dni:string[20];
+   nom_ape:string[30];
+   rut,nutri,pt:char;
+   dico,a,b,mes,anio:integer;
+   k:boolean;
 
 begin
-    read(cli,clientes);
+    read(cli,clien);
 	write('Ingrese el DNI del cliente: ');
 	readln(dni);
-    a:= dictomica(dni);
-    if a = 0 then
+    dico:= dicotomica(dni);
+    if dico = 0 then                                                     {Cuando no lo encuentra, se le da de alta y se le preguntan los campos del registro}
        begin
             write('Ingrese DNI: ');
             readln(dni);
+            write(clien.dni,dni);
             write('Ingrese Nombre y apellido: ');
             readln(nom_ape);
+            write(clien.nombre_y_apellido,nom_ape);
             write('Prefiere rutinas? (S/N)');
             readln(rut);
-            write('Prefiere nutricionista? (S/N));
+            if rut = 's' then
+            begin
+                 write(clien.rutina_sn,rut);
+                 write(r.dni,dni);
+                 writeln('Ingrese el mes');
+                 readln(mes);
+                 writeln('Ingrese año');
+                 readln(anio);
+                 write(r.mes,mes);
+                 write(r.anio,anio);
+                 k:=false;
+                 write(r.borrado_logico,k);
+            end;
+            write('Prefiere nutricionista? (S/N)): ');
             readln(nutri);
+            write(clien.nutri_sn,nutri);
             write('Preferie Personal Trainer? (S/N)');
             readln(pt);
-            for 1 to 2 do
-            begin
-                 writeln('Ingrese el pago en pesos del año en orden, 1 pago: Enero, 12 pago: Diciembre: ')
-            end;
-
-       end
+            write(clien.personal_sn,pt);
+       end;
 end;
 
 
@@ -182,182 +200,6 @@ begin
     menu;
     readkey
 end.
-=======
-program tp3(input,output);  										{Direccion de los archivos: C:\Tp3\TP3.pas}
-uses crt;
-type
-    pagoypeso= array[1..2,1..2] of Real;
-    cantidadrepet = array[1..4,1..50] of Integer;
-
-	gimnasio = record 												{Declaracion de los registros para los archivos}
-    pago_en_pesos_y_peso_actual = array[1..2,1..2] of Real;
-    cantidad_repeticiones = array[1..4,1..50] of Integer;
-
-	gimnasio = record 								{Declaracion de los registros para los archivos}
-		nombre: String[30];
-        direccion: String[30];
-		valor_cuota: Real;
-		valor_nutricionista: Real;
-		valor_personal_trainer: Real;
-	end;
-
-	actividades = record
-		codigo_actividad: Integer;
-		descripcion_actividad: String[30];
-	end;
-
-	dias_y_horarios = record
-		dia: Integer;
-		hora: String[5];
-		codigo_actividad: Integer;
-	end;
-
-	ejercicios_x_rutina = record
-		codigo_ejercicio: Integer;
-		descripcion_rutina: String[30];
-	end;
-
-	clientes = record
-		dni: Integer;
-		nombre_y_apellido: String[30];
-		rutina_sn: Char;
-		nutri_sn: Char;
-		personal_sn: Char;
-		pago_en_pesos_y_peso_actual: pagoypeso;
-		pago_en_pesos_y_peso_actual: pago_en_pesos_y_peso_actual;
-	end;
-
-	rutinas_x_clientes = record
-		dni: String[8];
-		mes: Integer;
-		anio: Integer;
-		cantidad_repeticiones: cantidadrepet;
-		borrado_logico: Boolean;
-	end;
-
-    g = file of gimnasio;
-    a = file of actividades;
-    d = file of dias_y_horarios;
-    e = file of ejercicios_x_rutina;
-    c = file of clientes;
-    r = file of rutinas_x_clientes;
-
-var
-	gim:g;
-	act:a;
-	dia_y_hora:d;
-	ejexrut:e;
-	cli:c;
-	rutxcli:r;
-
-function dicotomica(a:c;b:string): integer;
-var
-sup,inf,med:integer;
-band:boolean;
-begin
-     sup:=filesize(a)-1;
-     inf:=0;
-     band:=false;
-     while (band= false) and (inf <= sup) do
-     begin
-          med:= (inf+sup)div 2;
-          seek(cli,med);
-          read(c,clientes);
-          if clientes.dni <> b then
-             begin
-                  if clientes.dni > b then
-                     begin
-                          sup:=med-1
-                     end
-                  else
-                     begin
-                          inf:=med-1
-                     end;
-             end
-          else
-              begin
-                   band:=true
-              end;
-     if clientes.dni = b then
-        begin
-              dicotomica:=0
-        end
-     else
-         begin
-              dicotomica:=1
-         end;
-
-end;
-
-
-procedure busqueda_cliente();
-var
-   dni:string;
-
-begin
-    read(cli,clientes);
-	write('Ingrese el DNI del cliente: ');
-	readln(dni);
-    a:= dictomica(dni);
-    if a = 0 then
-       begin
-            write('Ingrese DNI: ');
-            readln(dni);
-            write('Ingrese Nombre y apellido: ');
-            readln(nom_ape);
-            write('Prefiere rutinas? (S/N)');
-            readln(rut);
-            write('Prefiere nutricionista? (S/N));
-            readln(nutri);
-            write('Preferie Personal Trainer? (S/N)');
-            readln(pt);
-            for 1 to 2 do
-            begin
-                 writeln('Ingrese el pago en pesos del año en orden, 1 pago: Enero, 12 pago: Diciembre: ')
-            end;
-
-       end
-end;
-
-
-
-
-
-
-
-
-procedure menu;  {Menu principal}
-		cantidad_repeticiones: cantidad_repeticiones;
-		borrado_logico: Boolean;
-	end;
-
-    gimna = file of gimnasio;
-    acti = file of actividades;
-    dia_y_hor = file of dias_y_horarios;
-    ejer_x_ruti = file of ejercicios_x_rutina;
-    clie = file of clientes;
-    ruti_x_clie = file of rutinas_x_clientes;
-
-var
-	repet: cantidad_repeticiones;
-	pagoypeso: pago_en_pesos_y_peso_actual;
-
-    {registros}
-    g:gimnasio;
-    a:actividades;
-    dyh:dias_y_horarios;
-    exr:ejercicios_x_rutina;
-    c:clientes;
-    rxc:rutinas_x_clientes;
-
-    {archivos}
-    gim: gimna;
-    act: acti;
-    d_y_h: dia_y_hor;
-    eje_x_rut: ejer_x_ruti;
-    cli: clie;
-    rut_x_cli: ruti_x_clie;
-
 procedure ABM;
 var
     op: Integer;
@@ -516,4 +358,3 @@ begin
     menu;
     readkey
 end.
->>>>>>> 896d96abe2a047f604bc2ff047c4c8841e2d1cb9
