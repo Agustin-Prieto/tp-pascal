@@ -45,13 +45,6 @@ type
 		borrado_logico: Boolean;
 	end;
 
-    gimna = file of gimnasio;
-    acti = file of actividades;
-    dia_y_hor = file of dias_y_horarios;
-    ejer_x_ruti = file of ejercicios_x_rutina;
-    clie = file of clientes;
-    ruti_x_clie = file of rutinas_x_clientes;
-
 var
 	repet: cantidad_repeticiones;
 	pagoypeso: pago_en_pesos_y_peso_actual;
@@ -59,39 +52,23 @@ var
     {registros}
     g:gimnasio;
     a:actividades;
-    dyh:dias_y_horarios;
-    exr:ejercicios_x_rutina;
+    dyhreg:dias_y_horarios;
+    exrreg:ejercicios_x_rutina;
     c:clientes;
-    rxc:rutinas_x_clientes;
+    rxcreg:rutinas_x_clientes;
 
     {archivos}
-    gim: gimna;
-    act: acti;
-    d_y_h: dia_y_hor;
-    eje_x_rut: ejer_x_ruti;
-    cli: clie;
-    rut_x_cli: ruti_x_clie;
-
-
-
+    gim: file of gimnasio;
+    act: file of actividades;
+    dyh: file of dias_y_horarios;
+    exr: file of ejercicios_x_rutina;
+    cli: file of clientes;
+    rxc: file of rutinas_x_clientes;
 
 procedure ABM;
 var
     op: Integer;
-
-    dir_gim: string;    {Variables con direcciones de archivos}
-    dir_act: string;
-    dir_d_y_h: string;
-    dir_eje_x_rut: string;
-    dir_cli: string;
-    dir_rut_x_cli: string;
 begin
-    dir_gim:= 'C:\tp-pascal\gimnasio.dat';
-    dir_act:= 'C:\tp-pascal\actividades.dat';
-    dir_d_y_h:= 'C:\tp-pascal\diasyhorarios.dat';
-    dir_eje_x_rut:= 'C:\tp-pascal\ejerciciosxrutina.dat';
-    dir_cli:= 'C:\tp-pascal\clientes.dat';
-    dir_rut_x_cli:= 'C:\tp-pascal\rutinasxclientes.dat';
 
     clrscr;
     writeln('Menu de ABM');
@@ -117,22 +94,20 @@ begin
                    until (op >= 1) and (op <= 2);
                    if op = 1 then
                       begin
-                         assign(gim,dir_gim);
-                         {$I-}
-                         reset(gim);
-                         if ioresult = 2 then
-                            rewrite(act);
-                         {$I+}
-                         {writeln('Ingrese el nombre');
-                         read(g.nombre); }
+                         writeln('Ingrese el nombre');
+                         readln(g.nombre);
                          writeln('Ingrese la direccion');
-                         read(g.direccion);
+                         readln(g.direccion);
                          writeln('Ingrese el valor de la cuota');
-                         read(g.valor_cuota);
+                         readln(g.valor_cuota);
                          writeln('Ingrese el valor del nutricionista');
-                         read(g.valor_nutricionista);
+                         readln(g.valor_nutricionista);
                          writeln('Ingrese el valor del personal trainer');
-                         read(g.valor_personal_trainer);
+                         readln(g.valor_personal_trainer);
+
+                         seek(gim,filesize(gim));
+                         write(gim,g);
+
                       end
                    else
                       begin
@@ -143,46 +118,34 @@ begin
                 end;
 
              2: begin
-                   assign(act,dir_act);
-                   {$I-}
-                   reset(act);
-                   If ioresult =2 then
-                      rewrite(act);
-                   {$I+}
-
                    writeln('Ingrese el codigo de la actividad');
-                   read(a.codigo_actividad);
+                   readln(a.codigo_actividad);
                    writeln('Ingrese la descripcion de la actividad');
-                   read(a.descripcion_actividad);
+                   readln(a.descripcion_actividad);
+
+                   seek(gim,filesize(act));
+                   write(act,a);
                 end;
 
              3:  begin
-                    assign(d_y_h,dir_d_y_h);
-                    {$I-}
-                    reset(d_y_h);
-                    If ioresult =2 then
-                       rewrite(d_y_h);
-                    {$I+}
-
                     writeln('Ingrese el dia');
-                    read(dyh.dia);
+                    readln(dyhreg.dia);
                     writeln('Ingrese la hora');
-                    read(dyh.hora);
+                    readln(dyhreg.hora);
                     writeln('Ingrese el codigo de la actividad');
-                    read(dyh.codigo_actividad);
+                    readln(dyhreg.codigo_actividad);
+
+                    seek(dyh,filesize(dyh));
+                    write(dyh,dyhreg);
                  end;
              4:  begin
-                    assign(rut_x_cli,dir_rut_x_cli);
-                    {$I-}
-                    reset(rut_x_cli);
-                    If ioresult =2 then
-                       rewrite(rut_x_cli);
-                    {$I+}
-
                     writeln('Ingrese el codigo de ejercicio');
-                    read(exr.codigo_ejercicio);
+                    readln(exrreg.codigo_ejercicio);
                     writeln('Ingrese la descripcion de la rutina');
-                    read(exr.descripcion_rutina);
+                    readln(exrreg.descripcion_rutina);
+
+                    seek(exr,filesize(exr));
+                    write(exr,exrreg);
                 end;
           end;
 
@@ -226,7 +189,48 @@ begin
 end;
 
 begin
+     assign(gim,'C:\TP3\gimnasio.dat');
+     {$I-}
+     reset(gim);
+     if ioresult = 2 then
+        rewrite(gim);
+     {$I+}
+
+     assign(act,'C:\TP3\actividades.dat');
+     {$I-}
+     reset(act);
+     if ioresult = 2 then
+        rewrite(act);
+     {$I+}
+
+     assign(dyh,'C:\TP3\dias_y_horarios.dat');
+     {$I-}
+     reset(dyh);
+     if ioresult = 2 then
+        rewrite(dyh);
+     {$I+}
+
+     assign(exr,'C:\TP3\ejercicios_x_rutinas.dat');
+     {$I-}
+     reset(exr);
+     if ioresult = 2 then
+        rewrite(exr);
+     {$I+}
+
+     assign(cli,'C:\TP3\clientes.dat');
+     {$I-}
+     reset(cli);
+     if ioresult = 2 then
+        rewrite(cli);
+     {$I+}
+
+     assign(rxc,'C:\TP3\rutinas_x_clientes.dat');
+     {$I-}
+     reset(rxc);
+     if ioresult = 2 then
+        rewrite(rxc);
+     {$I+}
 	{Menu/Programa princial}
     menu;
-    readkey
+    readkey ;
 end.
