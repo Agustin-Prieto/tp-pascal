@@ -1,11 +1,12 @@
-program tp3(input,output);  										{Direccion de los archivos: C:\Tp3\TP3.pas}
+program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt, sysutils;
 type
-    pagoypeso= array[1..2,1..12] of Real;
-    cantidadrepet = array[1..4,1..50] of Integer;
+    pago_en_pesos_y_peso_actual = array[1..2,1..2] of Real;
+    cantidad_repeticiones = array[1..4,1..50] of Integer;
 
-	gimnasio = record 												{Declaracion de los registros para los archivos}
-		nombre,direccion: String[30];
+	gimnasio = record 								{Declaracion de los registros para los archivos}
+		nombre: String[30];
+        direccion: String[30];
 		valor_cuota: Real;
 		valor_nutricionista: Real;
 		valor_personal_trainer: Real;
@@ -28,178 +29,52 @@ type
 	end;
 
 	clientes = record
-		dni: string[20];
+		dni: Integer;
 		nombre_y_apellido: String[30];
 		rutina_sn: Char;
 		nutri_sn: Char;
 		personal_sn: Char;
-		pago_en_pesos_y_peso_actual: pagoypeso;
+		pago_en_pesos_y_peso_actual: pago_en_pesos_y_peso_actual;
 	end;
 
 	rutinas_x_clientes = record
 		dni: String[8];
 		mes: Integer;
 		anio: Integer;
-		cantidad_repeticiones: cantidadrepet;
+		cantidad_repeticiones: cantidad_repeticiones;
 		borrado_logico: Boolean;
 	end;
 
-    g = file of gimnasio;
-    a = file of actividades;
-    d = file of dias_y_horarios;
-    e = file of ejercicios_x_rutina;
-    c = file of clientes;
-    r = file of rutinas_x_clientes;
+    gimna = file of gimnasio;
+    acti = file of actividades;
+    dia_y_hor = file of dias_y_horarios;
+    ejer_x_ruti = file of ejercicios_x_rutina;
+    clie = file of clientes;
+    ruti_x_clie = file of rutinas_x_clientes;
 
 var
-    gim:g;
-	act:a;
-	dia_y_hora:d;
-	ejexrut:e;
-	cli:c;
-	rutxcli:r;
+	repet: cantidad_repeticiones;
+	pagoypeso: pago_en_pesos_y_peso_actual;
 
+    {registros}
+    g:gimnasio;
+    a:actividades;
+    dyh:dias_y_horarios;
+    exr:ejercicios_x_rutina;
+    c:clientes;
+    rxc:rutinas_x_clientes;
 
-function dicotomica(a:string[20]): integer;    {Busqueda dicotomica, si el resultado devuevle un "1" quiere decir que no se encontro, en cambio
-                                                si es "0", significa que si encontro el dni buscado}
-
-var
-   b:clientes;
-   sup,inf,med:integer;
-   band:boolean;
-begin
-     sup:=filesize(cli)-1;
-     inf:=0;
-     band:=false;
-     while (band= false) and (inf <= sup) do
-     begin
-          med:= (inf+sup)div 2;
-          seek(cli,med);
-          read(cli,b);
-          if a <> b.dni then
-             begin
-                  if b.dni > a then
-                     begin
-                          sup:=med-1
-                     end
-                  else
-                     begin
-                          inf:=med-1
-                     end;
-             end
-          else
-              begin
-                   band:=true
-              end;
-     if a = b.dni then
-        begin
-              dicotomica:=0
-        end
-     else
-         begin
-              dicotomica:=1
-         end;
-
-end;
-end;
-
-
-procedure busqueda_cliente();                                       {Se busca el cliente mediante una funcion dicotomica}
-var
-   p:pagoypeso;
-   r:rutinas_x_clientes;
-   clien:clientes;
-   dni:string[20];
-   nom_ape:string[30];
-   rut,nutri,pt:char;
-   dico,a,b,mes,anio:integer;
-   k:boolean;
-
-begin
-    read(cli,clien);
-	write('Ingrese el DNI del cliente: ');
-	readln(dni);
-    dico:= dicotomica(dni);
-    if dico = 0 then                                                     {Cuando no lo encuentra, se le da de alta y se le preguntan los campos del registro}
-       begin
-            write('Ingrese DNI: ');
-            readln(dni);
-            write(clien.dni,dni);
-            write('Ingrese Nombre y apellido: ');
-            readln(nom_ape);
-            write(clien.nombre_y_apellido,nom_ape);
-            write('Prefiere rutinas? (S/N)');
-            readln(rut);
-            if rut = 's' then
-            begin
-                 write(clien.rutina_sn,rut);
-                 write(r.dni,dni);
-                 writeln('Ingrese el mes');
-                 readln(mes);
-                 writeln('Ingrese año');
-                 readln(anio);
-                 write(r.mes,mes);
-                 write(r.anio,anio);
-                 k:=false;
-                 write(r.borrado_logico,k);
-            end;
-            write('Prefiere nutricionista? (S/N)): ');
-            readln(nutri);
-            write(clien.nutri_sn,nutri);
-            write('Preferie Personal Trainer? (S/N)');
-            readln(pt);
-            write(clien.personal_sn,pt);
-       end;
-end;
+    {archivos}
+    gim: gimna;
+    act: acti;
+    d_y_h: dia_y_hor;
+    eje_x_rut: ejer_x_ruti;
+    cli: clie;
+    rut_x_cli: ruti_x_clie;
 
 
 
 
-
-
-
-
-procedure menu;  {Menu principal}
-var
-   op:Integer;
-begin
-    writeln('Menu de opciones');
-    writeln('1) ABM');
-    writeln('2) Clientes');
-    writeln('3) Rutinas por clientes');
-    writeln('4) Listado de dias y horarios');
-    writeln('5) Recaudacion');
-    writeln('6) Reiniciar (blanqueo)');
-
-    repeat
-       readln(op);
-    until (op >=1) and (op <=6);
-
-    while op <> 7 do
-      begin
-          case op of
-             1: writeln('Texto de prueba');
-             2: writeln('Texto de prueba');
-             3: writeln('Texto de prueba');
-             4: writeln('Texto de prueba');
-             5: writeln('Texto de prueba');
-             6: writeln('Texto de prueba');
-          end;
-
-          repeat
-             readln(op);
-          until (op >=1) and (op <= 6);
-      end;
-end;
-
-begin
-						{Menu/Programa princial}
-	assign (cli,'C:\Tp3\Clientes.dat');
-	rewrite(cli);
-    reset(cli);
-    menu;
-    readkey
-end.
 procedure ABM;
 var
     op: Integer;
@@ -351,10 +226,7 @@ begin
 end;
 
 begin
-						{Menu/Programa princial}
-	assign (cli,'C:\Tp3\Clientes.dat');
-	rewrite(cli);
-    reset(cli);}
+	{Menu/Programa princial}
     menu;
     readkey
 end.
