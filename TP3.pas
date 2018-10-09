@@ -72,6 +72,9 @@ var
     cli: clie;
     rut_x_cli: ruti_x_clie;
 
+
+
+
 procedure ABM;
 var
     op: Integer;
