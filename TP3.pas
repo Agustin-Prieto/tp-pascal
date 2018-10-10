@@ -46,9 +46,6 @@ type
 	end;
 
 var
-	repet: cantidad_repeticiones;
-	pagoypeso:pp;
-
     {registros}
     g:gimnasio;
     a:actividades;
@@ -75,9 +72,9 @@ begin
           sup:=filesize(cli)-1;
           inf:=0;
           band:=false;
+          read(cli,c);
           while (band=false) and (a <> c.dni) do
           begin
-               read(cli,c);
                med:=(sup+inf) div 2;
                seek(cli,med);
                if a=c.dni then
@@ -176,7 +173,6 @@ begin
                    writeln('Ingrese la descripcion de la actividad');
                    readln(a.descripcion_actividad);
 
-                   seek(gim,filesize(act));
                    write(act,a);
                 end;
 
@@ -192,7 +188,6 @@ begin
                           readln(dyhreg.codigo_actividad);
                     until dyhreg.codigo_actividad > 0;
 
-                    seek(dyh,filesize(dyh));
                     write(dyh,dyhreg);
                  end;
              4:  begin
@@ -203,7 +198,6 @@ begin
                     writeln('Ingrese la descripcion de la rutina');
                     readln(exrreg.descripcion_rutina);
 
-                    seek(exr,filesize(exr));
                     write(exr,exrreg);
                 end;
           end;
@@ -214,22 +208,30 @@ begin
       end;
 end;
 
-procedure CLIENT();                                         {Modulo 2: Clientes}
+{============================================================================= CLIENTES ============================================================================}
+
+procedure CLIENT();
 var
    yy,mm,dd:word;
-   busqueda,pago:integer;
+   busqueda,pago,mes:integer;
    deuda:char;
    dni:string[8];
 begin
      clrscr;
      writeln('Ingrese el DNI: ');
      readln(dni);
+     {$I-}
      busqueda:=dicotomica(dni);
+     writeln('Paso la dicotomica');
+     writeln(ioresult);
+     readkey;
+
 
      if busqueda = 1 then                                {Si la busqueda dicotomica devuelve 1, quiere decir que se encontro el cliente}
      begin
           decodedate(date,yy,mm,dd);
-          if pagoypeso[mm,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
+          mes:=mm;
+          if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
                writeln('Usted debe el mes actual');                            {Se le consultan datos nuevamente y se verifica si desea pagar el mes o no}
                writeln('Desea solicitar una rutina (S/N): ');
@@ -284,7 +286,7 @@ begin
           repeat
                 readln(pago);
           until pago>0;
-          c.pago_en_pesos_y_peso_actual[mm,1]:=pago;
+          c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
           writeln('El pago fue registrado con exito');
           rxcreg.borrado_logico:=false;
           c.dni:=dni;
@@ -297,18 +299,27 @@ begin
      write(rxc,rxcreg);
 end;
 
+{============================================================================= RUTINAS ============================================================================}
+
 procedure RUTINAS();
 var
 dni:string[8];
 mm,yy,dd,mes,anio:word;
+busqueda:integer;
 begin
      decodedate(date,yy,mm,dd);
+     mes:=mm;
+     anio:=yy;
      write('Ingrese DNI del cliente: ');
      readln(dni);
-     write('Ingrese el mes correspondiente');
-     readln(mes);
-     write('Ingrese el año correspondiente: ');
-     readln(anio);
+     busqueda:=dicotomica(dni);
+     if (busqueda=1) and (rxcreg.borrado_logico=false) then
+     begin
+          write('Ingrese el mes correspondiente');
+          readln(mes);
+          write('Ingrese el año correspondiente: ');
+          readln(anio);
+     end;
 
 end;
 
