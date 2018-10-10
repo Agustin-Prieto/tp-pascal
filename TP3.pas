@@ -118,7 +118,7 @@ begin
 
     clrscr;
     writeln('Menu de ABM');
-    writeln('¿Que archivo quiere crear?');
+    writeln('¿Que archivo desea utilizar?');
     writeln('1) Gimnasio');
     writeln('2) Actividades');
     writeln('3) Dias y Horarios');
@@ -133,8 +133,8 @@ begin
           case op of
              1: begin
                    writeln('¿Quiere crear/abrir el archivo o quiere modificar algun campo?');
-                   writeln('1) Crear/Abrir Archivo');
-                   writeln('2) Modificar un campo');
+                   writeln('1) Dar de alta nuevo cliente');
+                   writeln('2) Modificar datos del cliente');
                    repeat
                         readln(op);
                    until (op >= 1) and (op <= 2);
@@ -145,17 +145,23 @@ begin
                          writeln('Ingrese la direccion');
                          readln(g.direccion);
                          writeln('Ingrese el valor de la cuota');
-                         readln(g.valor_cuota);
+                         repeat
+                               readln(g.valor_cuota);
+                         until (g.valor_cuota > 0);
                          writeln('Ingrese el valor del nutricionista');
-                         readln(g.valor_nutricionista);
+                         repeat
+                               readln(g.valor_nutricionista);
+                         until g.valor_nutricionista > 0;
                          writeln('Ingrese el valor del personal trainer');
-                         readln(g.valor_personal_trainer);
+                         repeat
+                               readln(g.valor_personal_trainer);
+                         until g.valor_nutricionista > 0;
 
                          write(gim,g);
 
                       end
                    else
-                      begin
+                      begin  {terminar}
                          writeln('Ingrese un nuevo valor para el valor de la cuota');
                          writeln('Ingrese un nuevo valor para el valor del nutricionista');
                          writeln('Ingrese un nuevo valor para el valor del personal trainer');
@@ -164,7 +170,9 @@ begin
 
              2: begin
                    writeln('Ingrese el codigo de la actividad');
+                   repeat
                    readln(a.codigo_actividad);
+                   until a.codigo_actividad > 0;
                    writeln('Ingrese la descripcion de la actividad');
                    readln(a.descripcion_actividad);
 
@@ -174,18 +182,24 @@ begin
 
              3:  begin
                     writeln('Ingrese el dia');
-                    readln(dyhreg.dia);
+                    repeat
+                          readln(dyhreg.dia);
+                    until dyhreg.dia > 0;
                     writeln('Ingrese la hora');
                     readln(dyhreg.hora);
                     writeln('Ingrese el codigo de la actividad');
-                    readln(dyhreg.codigo_actividad);
+                    repeat
+                          readln(dyhreg.codigo_actividad);
+                    until dyhreg.codigo_actividad > 0;
 
                     seek(dyh,filesize(dyh));
                     write(dyh,dyhreg);
                  end;
              4:  begin
                     writeln('Ingrese el codigo de ejercicio');
-                    readln(exrreg.codigo_ejercicio);
+                    repeat
+                          readln(exrreg.codigo_ejercicio);
+                    until exrreg.codigo_ejercicio > 0;
                     writeln('Ingrese la descripcion de la rutina');
                     readln(exrreg.descripcion_rutina);
 

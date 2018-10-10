@@ -1,6 +1,23 @@
+<<<<<<< HEAD
 TP3.exe
 actividades.dat
 dias_y_horarios.dat
 gimnasio.dat
 tp3.ow
 ppas.bat
+=======
+*.lps
+*.compiled
+*.[oa]
+*.ppu
+*.rst
+*.cgi
+*.exe
+*.log
+*.ow
+*.dat
+*.bak*
+fp.ini
+fp.cfg
+fp.dsk
+>>>>>>> 966d266b56fcd2bf265b0f291eaa21a670c4ad5e
