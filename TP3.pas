@@ -1,7 +1,7 @@
 program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt, sysutils;
 type
-    pago_en_pesos_y_peso_actual = array[1..2,1..2] of Real;
+    pp = array[1..12,1..2] of Real;
     cantidad_repeticiones = array[1..4,1..50] of Integer;
 
 	gimnasio = record 								{Declaracion de los registros para los archivos}
@@ -29,12 +29,12 @@ type
 	end;
 
 	clientes = record
-		dni: Integer;
+		dni: string[8];
 		nombre_y_apellido: String[30];
 		rutina_sn: Char;
 		nutri_sn: Char;
 		personal_sn: Char;
-		pago_en_pesos_y_peso_actual: pago_en_pesos_y_peso_actual;
+		pago_en_pesos_y_peso_actual:pp;
 	end;
 
 	rutinas_x_clientes = record
@@ -47,7 +47,7 @@ type
 
 var
 	repet: cantidad_repeticiones;
-	pagoypeso: pago_en_pesos_y_peso_actual;
+	pagoypeso:pp;
 
     {registros}
     g:gimnasio;
@@ -64,6 +64,52 @@ var
     exr: file of ejercicios_x_rutina;
     cli: file of clientes;
     rxc: file of rutinas_x_clientes;
+
+function dicotomica(a:string): integer;
+var
+sup,inf,med:integer;
+band:boolean;
+begin
+     if filesize(cli) <> 0 then
+     begin
+          sup:=filesize(cli)-1;
+          inf:=0;
+          band:=false;
+          while (band=false) and (a <> c.dni) do
+          begin
+               read(cli,c);
+               med:=(sup+inf) div 2;
+               seek(cli,med);
+               if a=c.dni then
+               begin
+                    band:=true;
+               end
+               else
+               begin
+                    if a<c.dni then
+                    begin
+                         sup:=med-1;
+                    end
+               else
+               begin
+                    inf:=med+1;
+               end;
+          end;
+          end;
+          if (band = true ) and (a <> c.dni) then
+          begin
+               dicotomica:=0;
+          end                                                       {0 significa que no se encontro}
+          else
+          begin
+               dicotomica:=1;                                                        {1 significa que se encontro}
+          end;
+     end
+     else
+     begin
+          dicotomica := 0;
+     end;
+end;
 
 procedure ABM;
 var
@@ -111,7 +157,6 @@ begin
                                readln(g.valor_personal_trainer);
                          until g.valor_nutricionista > 0;
 
-                         seek(gim,filesize(gim));
                          write(gim,g);
 
                       end
@@ -169,6 +214,105 @@ begin
       end;
 end;
 
+procedure CLIENT();                                         {Modulo 2: Clientes}
+var
+   yy,mm,dd:word;
+   busqueda,pago:integer;
+   deuda:char;
+   dni:string[8];
+begin
+     clrscr;
+     writeln('Ingrese el DNI: ');
+     readln(dni);
+     busqueda:=dicotomica(dni);
+
+     if busqueda = 1 then                                {Si la busqueda dicotomica devuelve 1, quiere decir que se encontro el cliente}
+     begin
+          decodedate(date,yy,mm,dd);
+          if pagoypeso[mm,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
+          begin
+               writeln('Usted debe el mes actual');                            {Se le consultan datos nuevamente y se verifica si desea pagar el mes o no}
+               writeln('Desea solicitar una rutina (S/N): ');
+               repeat
+                     readln(c.rutina_sn);
+               until (c.rutina_sn='s') or (c.rutina_sn='n');
+               writeln('Desea solicitar un Personal Trainer? (S/N): ');
+               repeat
+                     readln(c.personal_sn);
+               until (c.personal_sn='s') or (c.personal_sn='n');
+               writeln('Desea pagar el mes actual? (S/N)');
+               repeat
+                     readln(deuda);
+               until (deuda='s') or (deuda='n');
+               if deuda = 's' then
+               begin
+                    clrscr;
+                    writeln('Ingrese el monto del pago: ');
+                    repeat
+                          readln(pago);
+                    until pago>0;
+                    c.pago_en_pesos_y_peso_actual[mm,1]:=pago;
+                    writeln('El pago fue registrado con exito');
+                    readkey;
+               end;
+
+          end;
+     end
+     else
+     begin
+          clrscr;
+          writeln('El cliente con DNI ( ',dni,' ) no pertenece a nuestros clientes');
+          writeln();
+          writeln('Para continuar, Detalle los siguientes datos a continuacion: ');
+          write('Ingrese el nombre y el apellido: ');
+          readln(c.nombre_y_apellido);
+          writeln('Desea solicitar una rutina (S/N): ');
+          repeat
+                readln(c.rutina_sn);
+          until (c.rutina_sn='s') or (c.rutina_sn='n');
+          if c.rutina_sn='s' then
+          begin
+               rxcreg.mes:=mm;
+               rxcreg.anio:=yy;
+               rxcreg.dni:=dni;
+          end;
+          writeln('Desea solicitar un Personal Trainer? (S/N): ');
+          repeat
+                readln(c.personal_sn);
+          until (c.personal_sn='s') or (c.personal_sn='n');
+          writeln('Ingrese el monto del pago: ');
+          repeat
+                readln(pago);
+          until pago>0;
+          c.pago_en_pesos_y_peso_actual[mm,1]:=pago;
+          writeln('El pago fue registrado con exito');
+          rxcreg.borrado_logico:=false;
+          c.dni:=dni;
+          readkey;
+
+
+
+     end;
+     write(cli,c);
+     write(rxc,rxcreg);
+end;
+
+procedure RUTINAS();
+var
+dni:string[8];
+mm,yy,dd,mes,anio:word;
+begin
+     decodedate(date,yy,mm,dd);
+     write('Ingrese DNI del cliente: ');
+     readln(dni);
+     write('Ingrese el mes correspondiente');
+     readln(mes);
+     write('Ingrese el año correspondiente: ');
+     readln(anio);
+
+end;
+
+
 procedure menu;
 var
    op:Integer;
@@ -188,13 +332,21 @@ begin
     while op <> 7 do
       begin
           case op of
-             1: ABM;
-             2: writeln('Texto de prueba');
-             3: writeln('Texto de prueba');
+             1: ABM();
+             2: CLIENT();
+             3: RUTINAS();
              4: writeln('Texto de prueba');
              5: writeln('Texto de prueba');
              6: writeln('Texto de prueba');
           end;
+          clrscr;
+          writeln('Menu de opciones');
+          writeln('1) ABM');
+          writeln('2) Clientes');
+          writeln('3) Rutinas por clientes');
+          writeln('4) Listado de dias y horarios');
+          writeln('5) Recaudacion');
+          writeln('6) Reiniciar (blanqueo)');
 
           repeat
              readln(op);
