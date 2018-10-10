@@ -300,10 +300,11 @@ end;
 procedure RUTINAS();
 var
 dni:string[8];
+mm,yy,dd,mes,anio:word;
 begin
+     decodedate(date,yy,mm,dd);
      write('Ingrese DNI del cliente: ');
      readln(dni);
-
      write('Ingrese el mes correspondiente');
      readln(mes);
      write('Ingrese el año correspondiente: ');
