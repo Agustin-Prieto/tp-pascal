@@ -70,17 +70,12 @@ begin
         else
            begin
                 seek(cli,0);
-                writeln(filepos(cli));
                 readkey;
                 repeat
                       read(cli,c);
-                      writeln('Posicion dentro del repeat ',filepos(cli));
                 until eof(cli) or (a=c.dni);
-                writeln('Posicion fuera dentro del repeat',filepos(cli));
                 if a=c.dni then
                 begin
-                     writeln('Actual ',filepos(cli)-1);
-                     readkey;
                      secuencial:=filepos(cli)-1;
                 end
                 else
@@ -205,12 +200,14 @@ begin
      clrscr;
      writeln('Ingrese el DNI: ');
      readln(dni);
-     writeln('Filesize: ', filesize(cli));
+     {writeln('Filesize: ', filesize(cli));}
      busqueda:=secuencial(dni);
-     writeln('Secuencial: ', busqueda);
+     {writeln('Filesize actual ',filesize(cli));
+     writeln('Secuencial: ', busqueda);}
      readkey;
      if busqueda >= 0 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
      begin
+          readkey();
           if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
                writeln('Usted debe el mes actual');                            {Se le consultan datos nuevamente y se verifica si desea pagar el mes o no}
@@ -238,6 +235,11 @@ begin
                     readkey;
                end;
 
+          end;
+          if c.pago_en_pesos_y_peso_actual[mes,1] > 0 then
+          begin
+               writeln('El cliente no adeuda este mes');
+               readkey;
           end;
      end;
      if busqueda < 0 then
@@ -319,7 +321,14 @@ begin
           end;
           until op='n';
      end;
+     writeln(filesize(rxc));
+     writeln(filepos(rxc));
+     readkey();
      write(rxc,rxcreg);
+     writeln(filesize(rxc));
+     writeln(filepos(rxc));
+     readkey();
+     
 end;
 
 
