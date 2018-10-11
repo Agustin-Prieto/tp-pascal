@@ -295,7 +295,10 @@ begin
      write('Ingrese DNI del cliente: ');
      readln(dni);
      busqueda:=secuencial_cli(dni);
-     read(rxc,rxcreg);
+     if filesize(rxc)=0 then
+     begin
+          read(rxc,rxcreg);
+     end;
      seek(rxc,busqueda);
      seek(cli,busqueda);
      if (busqueda>=0) and (rxcreg.borrado_logico=false) then
