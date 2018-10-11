@@ -1,7 +1,7 @@
 program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt, sysutils;
 type
-    pp = array[1..12,1..2] of Real;
+    pp = array[1..12,1..2] of integer;
     cantidad_repeticiones = array[1..4,1..50] of Integer;
 
 	gimnasio = record 								{Declaracion de los registros para los archivos}
@@ -67,39 +67,51 @@ var
 
 function dicotomica(a:string): integer;
 var
-sup,inf,med:integer;
+sup,inf,med,dnir,dnip,c1,c2:integer;
+dnireg,dnipar:string;
 band:boolean;
 begin
+     dnipar:= a;
+
+     val(dnipar,dnip,c1);
+
      if filesize(cli) <> 0 then
      begin
+          read(cli,c);
+          dnireg:= c.dni;
+          val(dnireg,dnir,c2);
+
           sup:=filesize(cli)-1;
           inf:=0;
           band:=false;
-          while (band=false) and (a <> c.dni) do
+          while (band=false) and (inf <= sup) do
           begin
-               read(cli,c);
                med:=(sup+inf) div 2;
                seek(cli,med);
-               if a=c.dni then
-               begin
-                    band:=true;
-               end
-               else
-               begin
-                    if a<c.dni then
+               {read(cli,c);}
+               if (dnip=dnir) then
+                  begin
+                       band:=true;
+                  end
+               else if dnir > dnip then
                     begin
                          sup:=med-1;
                     end
                else
-               begin
-                    inf:=med+1;
-               end;
+                   begin
+                        inf:=med+1;
+                   end;
           end;
-          end;
-          if (band = true ) and (a <> c.dni) then
+          {if dnip = dnir then
+             begin
+                 band:= true;
+                 dicotomica:= 0;
+             end
+          else dicotomica:= 1;}
+          if (band = true ) and (dnip <> dnir) then
           begin
                dicotomica:=0;
-          end                                                       {0 significa que no se encontro}
+          end                                                      { 0 significa que no se encontro }
           else
           begin
                dicotomica:=1;                                                        {1 significa que se encontro}
@@ -284,7 +296,7 @@ begin
           repeat
                 readln(pago);
           until pago>0;
-          c.pago_en_pesos_y_peso_actual[mm,1]:=pago;
+          c.pago_en_pesos_y_peso_actual[1,1]:=pago;
           writeln('El pago fue registrado con exito');
           rxcreg.borrado_logico:=false;
           c.dni:=dni;
@@ -295,6 +307,7 @@ begin
      end;
      write(cli,c);
      write(rxc,rxcreg);
+     readkey;
 end;
 
 procedure RUTINAS();
