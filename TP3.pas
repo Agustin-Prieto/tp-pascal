@@ -65,7 +65,28 @@ var
 
 function secuencial(a:string):integer;
 begin
-     writeln('');
+     if filesize(cli)=0 then
+        secuencial:=-1
+        else
+           begin
+                seek(cli,0);
+                writeln(filepos(cli));
+                readkey;
+                repeat
+                      read(cli,c);
+                      writeln('Posicion dentro del repeat ',filepos(cli));
+                until eof(cli) or (a=c.dni);
+                writeln('Posicion fuera dentro del repeat',filepos(cli));
+                if a=c.dni then
+                begin
+                     writeln('Actual ',filepos(cli)-1);
+                     readkey;
+                     secuencial:=filepos(cli)-1;
+                end
+                else
+                    secuencial:=-1;
+                end;
+
 end;
 
 procedure ABM;
@@ -178,18 +199,18 @@ var
    deuda:char;
    dni:string[8];
 begin
+     decodedate(date,yy,mm,dd);
+     mes:=mm;
+     anio:=yy;
      clrscr;
      writeln('Ingrese el DNI: ');
      readln(dni);
      writeln('Filesize: ', filesize(cli));
      busqueda:=secuencial(dni);
-     writeln('Dicotomica: ', busqueda);
+     writeln('Secuencial: ', busqueda);
      readkey;
      if busqueda >= 0 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
      begin
-          decodedate(date,yy,mm,dd);
-          mes:=mm;
-          anio:=yy;
           if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
                writeln('Usted debe el mes actual');                            {Se le consultan datos nuevamente y se verifica si desea pagar el mes o no}
@@ -219,7 +240,7 @@ begin
 
           end;
      end;
-     if busqueda<0 then
+     if busqueda < 0 then
      begin
           clrscr;
           writeln('El cliente con DNI ( ',dni,' ) no pertenece a nuestros clientes');
