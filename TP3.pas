@@ -46,9 +46,6 @@ type
 	end;
 
 var
-	repet: cantidad_repeticiones;
-	pagoypeso:pp;
-
     {registros}
     g:gimnasio;
     a:actividades;
