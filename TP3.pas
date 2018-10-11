@@ -67,26 +67,17 @@ function secuencial(a:string):integer;
 begin
      if filesize(cli)=0 then
         secuencial:=-1
-        else
-           begin
-                seek(cli,0);
-                writeln(filepos(cli));
-                readkey;
-                repeat
-                      read(cli,c);
-                      writeln('Posicion dentro del repeat ',filepos(cli));
-                until eof(cli) or (a=c.dni);
-                writeln('Posicion fuera dentro del repeat',filepos(cli));
-                if a=c.dni then
-                begin
-                     writeln('Actual ',filepos(cli)-1);
-                     readkey;
-                     secuencial:=filepos(cli)-1;
-                end
-                else
-                    secuencial:=-1;
-                end;
-
+     else
+         begin
+              seek(cli,0);
+              repeat
+                    read(cli,c);
+              until eof(cli) or (a=c.dni);
+              if a=c.dni then
+                 secuencial:=filepos(cli)-1
+              else
+                  secuencial:=-1;
+         end;
 end;
 
 procedure ABM;
@@ -209,7 +200,7 @@ begin
      busqueda:=secuencial(dni);
      writeln('Secuencial: ', busqueda);
      readkey;
-     if busqueda >= 0 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
+     if busqueda > -1 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
      begin
           if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
@@ -240,7 +231,7 @@ begin
 
           end;
      end;
-     if busqueda < 0 then
+     if busqueda = -1 then
      begin
           clrscr;
           writeln('El cliente con DNI ( ',dni,' ) no pertenece a nuestros clientes');
