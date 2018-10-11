@@ -1,7 +1,7 @@
 program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt, sysutils;
 type
-    pp = array[1..12,1..2] of Real;
+    pp = array[1..12,1..2] of integer;
     cantidad_repeticiones = array[1..4,1..50] of Integer;
 
 	gimnasio = record 								{Declaracion de los registros para los archivos}
@@ -65,14 +65,31 @@ var
 
 function dicotomica(a:string): integer;
 var
+<<<<<<< HEAD
 sup,med,inf:integer;
 band:boolean;
 begin
      if filesize(cli) > 0 then
+=======
+sup,inf,med,dnir,dnip,c1,c2:integer;
+dnireg,dnipar:string;
+band:boolean;
+begin
+     dnipar:= a;
+
+     val(dnipar,dnip,c1);
+
+     if filesize(cli) <> 0 then
+>>>>>>> d530b66d3748e383f4d504fb80093d11d103a912
      begin
+          read(cli,c);
+          dnireg:= c.dni;
+          val(dnireg,dnir,c2);
+
           sup:=filesize(cli)-1;
           inf:=0;
           band:=false;
+<<<<<<< HEAD
           while (band=false) and (inf<=sup) do
                 begin
                 med:=(sup+inf) div 2;
@@ -98,6 +115,39 @@ begin
           if a <> c.dni then
           begin
                dicotomica:=0;
+=======
+          while (band=false) and (inf <= sup) do
+          begin
+               med:=(sup+inf) div 2;
+               seek(cli,med);
+               {read(cli,c);}
+               if (dnip=dnir) then
+                  begin
+                       band:=true;
+                  end
+               else if dnir > dnip then
+                    begin
+                         sup:=med-1;
+                    end
+               else
+                   begin
+                        inf:=med+1;
+                   end;
+          end;
+          {if dnip = dnir then
+             begin
+                 band:= true;
+                 dicotomica:= 0;
+             end
+          else dicotomica:= 1;}
+          if (band = true ) and (dnip <> dnir) then
+          begin
+               dicotomica:=0;
+          end                                                      { 0 significa que no se encontro }
+          else
+          begin
+               dicotomica:=1;                                                        {1 significa que se encontro}
+>>>>>>> d530b66d3748e383f4d504fb80093d11d103a912
           end;
      if filesize(cli)=0 then;
      begin
@@ -286,7 +336,11 @@ begin
           repeat
                 readln(pago);
           until pago>0;
+<<<<<<< HEAD
           c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
+=======
+          c.pago_en_pesos_y_peso_actual[1,1]:=pago;
+>>>>>>> d530b66d3748e383f4d504fb80093d11d103a912
           writeln('El pago fue registrado con exito');
           rxcreg.borrado_logico:=false;
           c.dni:=dni;
@@ -294,6 +348,7 @@ begin
      end;
      write(cli,c);
      write(rxc,rxcreg);
+     readkey;
 end;
 
 {============================================================================= RUTINAS ============================================================================}
