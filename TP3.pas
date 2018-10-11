@@ -67,6 +67,7 @@ function secuencial(a:string):integer;
 begin
      if filesize(cli)=0 then
         secuencial:=-1
+<<<<<<< HEAD
      else
          begin
               seek(cli,0);
@@ -78,6 +79,23 @@ begin
               else
                   secuencial:=-1;
          end;
+=======
+        else
+           begin
+                seek(cli,0);
+                readkey;
+                repeat
+                      read(cli,c);
+                until eof(cli) or (a=c.dni);
+                if a=c.dni then
+                begin
+                     secuencial:=filepos(cli)-1;
+                end
+                else
+                    secuencial:=-1;
+                end;
+
+>>>>>>> 4c039d667778aa28d64c4350778427fdf5e95ab4
 end;
 
 procedure ABM;
@@ -196,12 +214,14 @@ begin
      clrscr;
      writeln('Ingrese el DNI: ');
      readln(dni);
-     writeln('Filesize: ', filesize(cli));
+     {writeln('Filesize: ', filesize(cli));}
      busqueda:=secuencial(dni);
-     writeln('Secuencial: ', busqueda);
+     {writeln('Filesize actual ',filesize(cli));
+     writeln('Secuencial: ', busqueda);}
      readkey;
      if busqueda > -1 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
      begin
+          readkey();
           if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
                writeln('Usted debe el mes actual');                            {Se le consultan datos nuevamente y se verifica si desea pagar el mes o no}
@@ -229,6 +249,11 @@ begin
                     readkey;
                end;
 
+          end;
+          if c.pago_en_pesos_y_peso_actual[mes,1] > 0 then
+          begin
+               writeln('El cliente no adeuda este mes');
+               readkey;
           end;
      end;
      if busqueda = -1 then
@@ -310,7 +335,14 @@ begin
           end;
           until op='n';
      end;
+     writeln(filesize(rxc));
+     writeln(filepos(rxc));
+     readkey();
      write(rxc,rxcreg);
+     writeln(filesize(rxc));
+     writeln(filepos(rxc));
+     readkey();
+     
 end;
 
 
