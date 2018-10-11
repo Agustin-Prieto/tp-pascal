@@ -18,6 +18,7 @@ type
 	end;
 
 	dias_y_horarios = record
+        {nombre: String[10]; }
 		dia: Integer;
 		hora: String[5];
 		codigo_actividad: Integer;
@@ -63,11 +64,10 @@ var
     cli: file of clientes;
     rxc: file of rutinas_x_clientes;
 
-function secuencial(a:string):integer;
+function secuencial_cli(a:string):integer;
 begin
      if filesize(cli)=0 then
-        secuencial:=-1
-<<<<<<< HEAD
+        secuencial_cli:=-1
      else
          begin
               seek(cli,0);
@@ -75,27 +75,10 @@ begin
                     read(cli,c);
               until eof(cli) or (a=c.dni);
               if a=c.dni then
-                 secuencial:=filepos(cli)-1
+                 secuencial_cli:=filepos(cli)-1
               else
-                  secuencial:=-1;
+                  secuencial_cli:=-1;
          end;
-=======
-        else
-           begin
-                seek(cli,0);
-                readkey;
-                repeat
-                      read(cli,c);
-                until eof(cli) or (a=c.dni);
-                if a=c.dni then
-                begin
-                     secuencial:=filepos(cli)-1;
-                end
-                else
-                    secuencial:=-1;
-                end;
-
->>>>>>> 4c039d667778aa28d64c4350778427fdf5e95ab4
 end;
 
 procedure ABM;
@@ -110,18 +93,19 @@ begin
     writeln('2) Actividades');
     writeln('3) Dias y Horarios');
     writeln('4) Ejercicios por Rutinas');
+    writeln('5) Volver');
 
     repeat
        readln(op);
-    until (op >=1) and (op <=4);
+    until (op >=1) and (op <=5);
 
     while op <> 5 do
       begin
           case op of
              1: begin
                    writeln('¿Quiere crear/abrir el archivo o quiere modificar algun campo?');
-                   writeln('1) Dar de alta nuevo cliente');
-                   writeln('2) Modificar datos del cliente');
+                   writeln('1) Dar de alta al nuevo gimnasio');
+                   writeln('2) Modificar datos del gimnasio');
                    repeat
                         readln(op);
                    until (op >= 1) and (op <= 2);
@@ -192,6 +176,14 @@ begin
                 end;
           end;
 
+          clrscr;
+          writeln('Menu de ABM');
+          writeln('¿Que archivo desea utilizar?');
+          writeln('1) Gimnasio');
+          writeln('2) Actividades');
+          writeln('3) Dias y Horarios');
+          writeln('4) Ejercicios por Rutinas');
+          writeln('5) Volver');
           repeat
              readln(op);
           until (op >=1) and (op <= 4);
@@ -215,7 +207,7 @@ begin
      writeln('Ingrese el DNI: ');
      readln(dni);
      {writeln('Filesize: ', filesize(cli));}
-     busqueda:=secuencial(dni);
+     busqueda:=secuencial_cli(dni);
      {writeln('Filesize actual ',filesize(cli));
      writeln('Secuencial: ', busqueda);}
      readkey;
@@ -281,7 +273,7 @@ begin
           writeln('Ingrese el monto del pago: ');
           repeat
                 readln(pago);
-          until pago>0;
+          until pago>=0;
           c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
           writeln('El pago fue registrado con exito');
           rxcreg.borrado_logico:=false;
@@ -307,7 +299,7 @@ begin
      anio:=yy;
      write('Ingrese DNI del cliente: ');
      readln(dni);
-     busqueda:=secuencial(dni);
+     busqueda:=secuencial_cli(dni);
      if (busqueda>=0) and (rxcreg.borrado_logico=false) then
      begin
           write('Mes: ');
@@ -345,6 +337,40 @@ begin
      
 end;
 
+{============================================================================= LISTADO ============================================================================}
+
+procedure LISTADO();
+var
+   i: integer;
+begin
+     clrscr;
+     read(gim,g);
+     seek(gim,0);
+     if filesize(gim) = 0 then
+        begin
+             writeln('no hay datos del gimnasio');
+             readkey;
+        end
+     else
+       begin
+          writeln('Datos del Gimnasio');
+          writeln('    Nombre: ',g.nombre);
+          writeln('    Cuota: $',g.valor_cuota);
+          writeln('    Nutricionista: $',g.valor_nutricionista);
+          writeln('    Personal Trainer: $',g.valor_personal_trainer);
+          writeln();
+          readkey;
+
+          read(dyh,dyhreg);
+          if filesize(dyh) = 0 then
+             writeln('No hay informacion acerca de los dias y horarios');
+       end;
+readkey;
+end;
+
+
+
+
 
 procedure menu;
 var
@@ -368,7 +394,7 @@ begin
              1: ABM();
              2: CLIENT();
              3: RUTINAS();
-             4: writeln('Texto de prueba');
+             4: LISTADO();
              5: writeln('Texto de prueba');
              6: writeln('Texto de prueba');
           end;
