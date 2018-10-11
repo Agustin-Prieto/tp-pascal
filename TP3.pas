@@ -188,14 +188,18 @@ procedure CLIENT();
 var
    yy,mm,dd:word;
    mes,anio:integer;
-   pago:real;
    deuda:char;
    dni:string[8];
+   cuota:real;
 begin
      decodedate(date,yy,mm,dd);
      mes:=mm;
      anio:=yy;
      clrscr;
+     if filesize(gim)<0 then
+     begin
+          read(gim,g);
+     end;
      writeln('Ingrese el DNI: ');
      readln(dni);
      {writeln('Filesize: ', filesize(cli));}
@@ -223,13 +227,17 @@ begin
                until (deuda='s') or (deuda='n');
                if deuda = 's' then
                begin
-                    clrscr;
-                    writeln('Ingrese el monto del pago: ');
-                    repeat
-                          readln(pago);
-                    until pago>=0;
-                    c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
-                    writeln('El pago fue registrado con exito');
+                    if c.rutina_sn='s' then
+                    begin
+                         cuota:=cuota+g.valor_cuota;
+                    end;
+                    if c.personal_sn='s' then
+                    begin
+                         cuota:=cuota+g.valor_personal_trainer;
+                    end;
+                    cuota:=cuota+g.valor_cuota;
+                    c.pago_en_pesos_y_peso_actual[mes,1]:=cuota;
+                    writeln('El pago fue realizado con exito!');
                     readkey;
                end;
 
@@ -262,12 +270,18 @@ begin
           repeat
                 readln(c.personal_sn);
           until (c.personal_sn='s') or (c.personal_sn='n');
-          writeln('Ingrese el monto del pago: ');
-          repeat
-                readln(pago);
-          until pago>0;
-          c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
-          writeln('El pago fue registrado con exito');
+          if c.rutina_sn='s' then
+          begin
+               cuota:=cuota+g.valor_cuota;
+          end;
+          if c.personal_sn='s' then
+          begin
+               cuota:=cuota+g.valor_personal_trainer;
+          end;
+          cuota:=cuota+g.valor_cuota;
+          c.pago_en_pesos_y_peso_actual[mes,1]:=cuota;
+          writeln('El pago fue realizado con exito!');
+          readkey;
           rxcreg.borrado_logico:=false;
           c.dni:=dni;
           readkey;
@@ -352,6 +366,37 @@ begin
 end;
 
 
+
+
+procedure RECAUDACION();
+var
+mes,i:integer;
+recaudado:real;
+begin
+     clrscr;
+     if filesize(cli)>0 then
+     begin
+          recaudado:=0;
+          writeln('Ingrese el numero mes deseado: ');
+          repeat
+                readln(mes);
+          until (mes>0) and (mes<13);
+          read(cli,c);
+          for i:=1 to filesize(cli)-1 do
+          begin
+               seek(cli,i);
+               recaudado:=recaudado+c.pago_en_pesos_y_peso_actual[mes,1];
+          end;
+          writeln('Lo recaudado en el mes ',mes,' es: ', recaudado:5:2);
+          readkey();
+     end
+     else
+     begin
+          writeln('No existen registro de ese mes');
+          readkey;
+     end;
+end;
+
 procedure menu;
 var
    op:Integer;
@@ -375,7 +420,7 @@ begin
              2: CLIENT();
              3: RUTINAS();
              4: writeln('Texto de prueba');
-             5: writeln('Texto de prueba');
+             5: RECAUDACION();
              6: writeln('Texto de prueba');
           end;
           clrscr;
