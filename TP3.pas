@@ -18,7 +18,6 @@ type
 	end;
 
 	dias_y_horarios = record
-        {nombre: String[10]; }
 		dia: Integer;
 		hora: String[5];
 		codigo_actividad: Integer;
@@ -68,7 +67,6 @@ function secuencial_cli(a:string):integer;
 begin
      if filesize(cli)=0 then
         secuencial_cli:=-1
-<<<<<<< HEAD
      else
          begin
               seek(cli,0);
@@ -80,23 +78,8 @@ begin
               else
                   secuencial_cli:=-1;
          end;
-=======
-        else
-           begin
-                seek(cli,0);
-                repeat
-                      read(cli,c);
-                until eof(cli) or (a=c.dni);
-                if a=c.dni then
-                begin
-                     secuencial_cli:=filepos(cli)-1;
-                end
-                else
-                    secuencial_cli:=-1;
-                end;
->>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
 end;
-
+{==============================================================================ABM================================================================================}
 procedure ABM;
 var
     op: Integer;
@@ -230,10 +213,8 @@ begin
      busqueda:=secuencial_cli(dni);
      {writeln('Filesize actual ',filesize(cli));
      writeln('Secuencial: ', busqueda);}
-     readkey;
      if busqueda > -1 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
      begin
-          readkey();
           if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
                writeln('Usted debe el mes actual');                            {Se le consultan datos nuevamente y se verifica si desea pagar el mes o no}
@@ -294,14 +275,6 @@ begin
           repeat
                 readln(c.personal_sn);
           until (c.personal_sn='s') or (c.personal_sn='n');
-<<<<<<< HEAD
-          writeln('Ingrese el monto del pago: ');
-          repeat
-                readln(pago);
-          until pago>=0;
-          c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
-          writeln('El pago fue registrado con exito');
-=======
           if c.rutina_sn='s' then
           begin
                cuota:=cuota+g.valor_cuota;
@@ -314,11 +287,9 @@ begin
           c.pago_en_pesos_y_peso_actual[mes,1]:=cuota;
           writeln('El pago fue realizado con exito!');
           readkey;
->>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
-          rxcreg.borrado_logico:=false;
-          c.dni:=dni;
-          readkey;
      end;
+     rxcreg.borrado_logico:=false;
+     c.dni:=dni;
      write(cli,c);
      write(rxc,rxcreg);
 end;
@@ -335,22 +306,19 @@ begin
      clrscr;
      pact:=0;
      mes:=0;
-     if filesize(cli)=0 then
+     if filesize(cli)>0 then
      begin
           read(cli,c);
      end;
      write('Ingrese DNI del cliente: ');
      readln(dni);
      busqueda:=secuencial_cli(dni);
-<<<<<<< HEAD
-=======
      if filesize(rxc)=0 then
      begin
           read(rxc,rxcreg);
      end;
      seek(rxc,busqueda);
      seek(cli,busqueda);
->>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
      if (busqueda>=0) and (rxcreg.borrado_logico=false) then
      begin
           write('Mes: ');
@@ -404,8 +372,6 @@ end;
 {============================================================================= LISTADO ============================================================================}
 
 procedure LISTADO();
-var
-   i: integer;
 begin
      clrscr;
      read(gim,g);
@@ -489,14 +455,8 @@ begin
              1: ABM();
              2: CLIENT();
              3: RUTINAS();
-<<<<<<< HEAD
              4: LISTADO();
-             5: writeln('Texto de prueba');
-=======
-             4: writeln('Texto de prueba');
              5: RECAUDACION();
->>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
-             6: writeln('Texto de prueba');
           end;
           clrscr;
           writeln('Menu de opciones');
