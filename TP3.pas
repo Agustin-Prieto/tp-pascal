@@ -63,25 +63,23 @@ var
     cli: file of clientes;
     rxc: file of rutinas_x_clientes;
 
-function secuencial(a:string):integer;
+function secuencial_cli(a:string):integer;
 begin
      if filesize(cli)=0 then
-        secuencial:=-1
+        secuencial_cli:=-1
         else
            begin
                 seek(cli,0);
-                readkey;
                 repeat
                       read(cli,c);
                 until eof(cli) or (a=c.dni);
                 if a=c.dni then
                 begin
-                     secuencial:=filepos(cli)-1;
+                     secuencial_cli:=filepos(cli)-1;
                 end
                 else
-                    secuencial:=-1;
+                    secuencial_cli:=-1;
                 end;
-
 end;
 
 procedure ABM;
@@ -201,7 +199,7 @@ begin
      writeln('Ingrese el DNI: ');
      readln(dni);
      {writeln('Filesize: ', filesize(cli));}
-     busqueda:=secuencial(dni);
+     busqueda:=secuencial_cli(dni);
      {writeln('Filesize actual ',filesize(cli));
      writeln('Secuencial: ', busqueda);}
      readkey;
@@ -229,7 +227,7 @@ begin
                     writeln('Ingrese el monto del pago: ');
                     repeat
                           readln(pago);
-                    until pago>0;
+                    until pago>=0;
                     c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
                     writeln('El pago fue registrado con exito');
                     readkey;
@@ -283,29 +281,41 @@ end;
 procedure RUTINAS();
 var
 dni:string[8];
-mm,yy,dd:word;
-busqueda,mes,anio,act,i,rep:integer;
+busqueda,mes,act,i,rep:integer;
+pact:real;
 op:char;
 begin
      clrscr;
-     decodedate(date,yy,mm,dd);
-     mes:=mm;
-     anio:=yy;
+     pact:=0;
+     mes:=0;
+     if filesize(cli)=0 then
+     begin
+          read(cli,c);
+     end;
      write('Ingrese DNI del cliente: ');
      readln(dni);
-     busqueda:=secuencial(dni);
+     busqueda:=secuencial_cli(dni);
+     read(rxc,rxcreg);
+     seek(rxc,busqueda);
+     seek(cli,busqueda);
      if (busqueda>=0) and (rxcreg.borrado_logico=false) then
      begin
           write('Mes: ');
-          readln(mes);
+          repeat
+                readln(rxcreg.mes);
+          until (rxcreg.mes>0) and (rxcreg.mes<7);
           write('Año: ');
-          readln(anio);
+          repeat
+                readln(rxcreg.anio);
+          until (rxcreg.anio<2100)and(rxcreg.anio>2000);
           repeat
           begin
                clrscr;
                writeln('Se ha encontrado el cliente. (DNI: ',dni,')');
                write('Ingrese actividad: ');
-               readln(act);
+               repeat
+                     readln(act);
+               until (act<=50) and (act>=0);
                for i:=1 to 4 do
                begin
                     clrscr;
@@ -315,19 +325,26 @@ begin
                     readln(rep);
                     rxcreg.cantidad_repeticiones[act,i]:=rep;
                end;
-          seek(rxc,busqueda);
           write('Desea agregar otra actividad? (S/N:) ');
-          readln(op)
+          repeat
+                readln(op);
+          until(op='n') or (op='s');
           end;
           until op='n';
+          writeln('Debe actualizar el peso del cliente: ',c.pago_en_pesos_y_peso_actual[mes,2]:5:3,' Kg');
+          repeat
+                readln(pact);
+          until pact>0;
+          c.pago_en_pesos_y_peso_actual[mes,2]:= pact;
+
      end;
-     writeln(filesize(rxc));
-     writeln(filepos(rxc));
-     readkey();
+     if busqueda<0 then
+     begin
+          writeln('El cliente no existe, debe crearlo primero');
+          readkey;
+     end;
      write(rxc,rxcreg);
-     writeln(filesize(rxc));
-     writeln(filepos(rxc));
-     readkey();
+     write(cli,c);
      
 end;
 
