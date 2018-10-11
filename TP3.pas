@@ -2,7 +2,7 @@ program tp3(input,output);  {Direccion de los archivos: C:\Tp-pascal\TP3.pas}
 uses crt, sysutils;
 type
     pp = array[1..12,1..2] of Real;
-    cantidad_repeticiones = array[1..4,1..50] of Integer;
+    cantrep = array[1..4,1..50] of Integer;
 
 	gimnasio = record 								{Declaracion de los registros para los archivos}
 		nombre: String[30];
@@ -41,7 +41,7 @@ type
 		dni: String[8];
 		mes: Integer;
 		anio: Integer;
-		cantidad_repeticiones: cantidad_repeticiones;
+		cantidad_repeticiones: cantrep;
 		borrado_logico: Boolean;
 	end;
 
@@ -63,49 +63,9 @@ var
     cli: file of clientes;
     rxc: file of rutinas_x_clientes;
 
-function dicotomica(a:string): integer;
-var
-sup,med,inf:integer;
-band:boolean;
+function secuencial(a:string):integer;
 begin
-     if filesize(cli) > 0 then
-     begin
-          sup:=filesize(cli)-1;
-          inf:=0;
-          band:=false;
-          while (band=false) and (inf<=sup) do
-                begin
-                med:=(sup+inf) div 2;
-                read(cli,c);
-                readkey;
-                seek(cli,med);
-                if a = c.dni then
-                begin
-                     band:=true;
-                     dicotomica:=1;
-                end                                       {1 lo encontro}
-                else
-                    if a < c.dni then
-                    begin
-                         sup:=med-1;
-                    end
-                    else
-                    begin
-                         inf:=med-1;
-                    end;
-                end;
-                end;
-          if a <> c.dni then
-          begin
-               dicotomica:=0;
-          end;
-     if filesize(cli)=0 then;
-     begin
-          dicotomica:=0;
-          writeln('En la dicotomica vale: ', dicotomica);
-          readkey;
-     end;
-end;
+     writeln('');
 end;
 
 procedure ABM;
@@ -222,10 +182,10 @@ begin
      writeln('Ingrese el DNI: ');
      readln(dni);
      writeln('Filesize: ', filesize(cli));
-     busqueda:=dicotomica(dni);
+     busqueda:=secuencial(dni);
      writeln('Dicotomica: ', busqueda);
      readkey;
-     if busqueda = 1 then                                {Si la busqueda dicotomica devuelve 1, quiere decir que se encontro el cliente}
+     if busqueda >= 0 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
      begin
           decodedate(date,yy,mm,dd);
           mes:=mm;
@@ -259,9 +219,8 @@ begin
 
           end;
      end;
-     if busqueda=0 then
+     if busqueda<0 then
      begin
-          {$I-}
           clrscr;
           writeln('El cliente con DNI ( ',dni,' ) no pertenece a nuestros clientes');
           writeln();
@@ -301,23 +260,45 @@ end;
 procedure RUTINAS();
 var
 dni:string[8];
-mm,yy,dd,mes,anio:word;
-busqueda:integer;
+mm,yy,dd:word;
+busqueda,mes,anio,act,i,rep:integer;
+op:char;
 begin
+     clrscr;
      decodedate(date,yy,mm,dd);
      mes:=mm;
      anio:=yy;
      write('Ingrese DNI del cliente: ');
      readln(dni);
-     busqueda:=dicotomica(dni);
-     if (busqueda=1) and (rxcreg.borrado_logico=false) then
+     busqueda:=secuencial(dni);
+     if (busqueda>=0) and (rxcreg.borrado_logico=false) then
      begin
-          write('Ingrese el mes correspondiente');
+          write('Mes: ');
           readln(mes);
-          write('Ingrese el año correspondiente: ');
+          write('Año: ');
           readln(anio);
+          repeat
+          begin
+               clrscr;
+               writeln('Se ha encontrado el cliente. (DNI: ',dni,')');
+               write('Ingrese actividad: ');
+               readln(act);
+               for i:=1 to 4 do
+               begin
+                    clrscr;
+                    writeln('Acitividad: ',act);
+                    writeln('Serie: ',i);
+                    write('Ingrese cantidad de repeticiones: ');
+                    readln(rep);
+                    rxcreg.cantidad_repeticiones[act,i]:=rep;
+               end;
+          seek(rxc,busqueda);
+          write('Desea agregar otra actividad? (S/N:) ');
+          readln(op)
+          end;
+          until op='n';
      end;
-
+     write(rxc,rxcreg);
 end;
 
 
