@@ -68,6 +68,7 @@ function secuencial_cli(a:string):integer;
 begin
      if filesize(cli)=0 then
         secuencial_cli:=-1
+<<<<<<< HEAD
      else
          begin
               seek(cli,0);
@@ -79,6 +80,21 @@ begin
               else
                   secuencial_cli:=-1;
          end;
+=======
+        else
+           begin
+                seek(cli,0);
+                repeat
+                      read(cli,c);
+                until eof(cli) or (a=c.dni);
+                if a=c.dni then
+                begin
+                     secuencial_cli:=filepos(cli)-1;
+                end
+                else
+                    secuencial_cli:=-1;
+                end;
+>>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
 end;
 
 procedure ABM;
@@ -196,14 +212,18 @@ procedure CLIENT();
 var
    yy,mm,dd:word;
    mes,anio:integer;
-   pago:real;
    deuda:char;
    dni:string[8];
+   cuota:real;
 begin
      decodedate(date,yy,mm,dd);
      mes:=mm;
      anio:=yy;
      clrscr;
+     if filesize(gim)<0 then
+     begin
+          read(gim,g);
+     end;
      writeln('Ingrese el DNI: ');
      readln(dni);
      {writeln('Filesize: ', filesize(cli));}
@@ -231,13 +251,17 @@ begin
                until (deuda='s') or (deuda='n');
                if deuda = 's' then
                begin
-                    clrscr;
-                    writeln('Ingrese el monto del pago: ');
-                    repeat
-                          readln(pago);
-                    until pago>0;
-                    c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
-                    writeln('El pago fue registrado con exito');
+                    if c.rutina_sn='s' then
+                    begin
+                         cuota:=cuota+g.valor_cuota;
+                    end;
+                    if c.personal_sn='s' then
+                    begin
+                         cuota:=cuota+g.valor_personal_trainer;
+                    end;
+                    cuota:=cuota+g.valor_cuota;
+                    c.pago_en_pesos_y_peso_actual[mes,1]:=cuota;
+                    writeln('El pago fue realizado con exito!');
                     readkey;
                end;
 
@@ -270,12 +294,27 @@ begin
           repeat
                 readln(c.personal_sn);
           until (c.personal_sn='s') or (c.personal_sn='n');
+<<<<<<< HEAD
           writeln('Ingrese el monto del pago: ');
           repeat
                 readln(pago);
           until pago>=0;
           c.pago_en_pesos_y_peso_actual[mes,1]:=pago;
           writeln('El pago fue registrado con exito');
+=======
+          if c.rutina_sn='s' then
+          begin
+               cuota:=cuota+g.valor_cuota;
+          end;
+          if c.personal_sn='s' then
+          begin
+               cuota:=cuota+g.valor_personal_trainer;
+          end;
+          cuota:=cuota+g.valor_cuota;
+          c.pago_en_pesos_y_peso_actual[mes,1]:=cuota;
+          writeln('El pago fue realizado con exito!');
+          readkey;
+>>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
           rxcreg.borrado_logico:=false;
           c.dni:=dni;
           readkey;
@@ -289,29 +328,47 @@ end;
 procedure RUTINAS();
 var
 dni:string[8];
-mm,yy,dd:word;
-busqueda,mes,anio,act,i,rep:integer;
+busqueda,mes,act,i,rep:integer;
+pact:real;
 op:char;
 begin
      clrscr;
-     decodedate(date,yy,mm,dd);
-     mes:=mm;
-     anio:=yy;
+     pact:=0;
+     mes:=0;
+     if filesize(cli)=0 then
+     begin
+          read(cli,c);
+     end;
      write('Ingrese DNI del cliente: ');
      readln(dni);
      busqueda:=secuencial_cli(dni);
+<<<<<<< HEAD
+=======
+     if filesize(rxc)=0 then
+     begin
+          read(rxc,rxcreg);
+     end;
+     seek(rxc,busqueda);
+     seek(cli,busqueda);
+>>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
      if (busqueda>=0) and (rxcreg.borrado_logico=false) then
      begin
           write('Mes: ');
-          readln(mes);
+          repeat
+                readln(rxcreg.mes);
+          until (rxcreg.mes>0) and (rxcreg.mes<7);
           write('Año: ');
-          readln(anio);
+          repeat
+                readln(rxcreg.anio);
+          until (rxcreg.anio<2100)and(rxcreg.anio>2000);
           repeat
           begin
                clrscr;
                writeln('Se ha encontrado el cliente. (DNI: ',dni,')');
                write('Ingrese actividad: ');
-               readln(act);
+               repeat
+                     readln(act);
+               until (act<=50) and (act>=0);
                for i:=1 to 4 do
                begin
                     clrscr;
@@ -321,19 +378,26 @@ begin
                     readln(rep);
                     rxcreg.cantidad_repeticiones[act,i]:=rep;
                end;
-          seek(rxc,busqueda);
           write('Desea agregar otra actividad? (S/N:) ');
-          readln(op)
+          repeat
+                readln(op);
+          until(op='n') or (op='s');
           end;
           until op='n';
+          writeln('Debe actualizar el peso del cliente: ',c.pago_en_pesos_y_peso_actual[mes,2]:5:3,' Kg');
+          repeat
+                readln(pact);
+          until pact>0;
+          c.pago_en_pesos_y_peso_actual[mes,2]:= pact;
+
      end;
-     writeln(filesize(rxc));
-     writeln(filepos(rxc));
-     readkey();
+     if busqueda<0 then
+     begin
+          writeln('El cliente no existe, debe crearlo primero');
+          readkey;
+     end;
      write(rxc,rxcreg);
-     writeln(filesize(rxc));
-     writeln(filepos(rxc));
-     readkey();
+     write(cli,c);
      
 end;
 
@@ -372,6 +436,37 @@ end;
 
 
 
+
+
+procedure RECAUDACION();
+var
+mes,i:integer;
+recaudado:real;
+begin
+     clrscr;
+     if filesize(cli)>0 then
+     begin
+          recaudado:=0;
+          writeln('Ingrese el numero mes deseado: ');
+          repeat
+                readln(mes);
+          until (mes>0) and (mes<13);
+          read(cli,c);
+          for i:=1 to filesize(cli)-1 do
+          begin
+               seek(cli,i);
+               recaudado:=recaudado+c.pago_en_pesos_y_peso_actual[mes,1];
+          end;
+          writeln('Lo recaudado en el mes ',mes,' es: ', recaudado:5:2);
+          readkey();
+     end
+     else
+     begin
+          writeln('No existen registro de ese mes');
+          readkey;
+     end;
+end;
+
 procedure menu;
 var
    op:Integer;
@@ -394,8 +489,13 @@ begin
              1: ABM();
              2: CLIENT();
              3: RUTINAS();
+<<<<<<< HEAD
              4: LISTADO();
              5: writeln('Texto de prueba');
+=======
+             4: writeln('Texto de prueba');
+             5: RECAUDACION();
+>>>>>>> 3fdd01f5ede5740c36bb5ad1bf12c4887805bfd4
              6: writeln('Texto de prueba');
           end;
           clrscr;
