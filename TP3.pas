@@ -375,9 +375,11 @@ begin
           writeln('El cliente no existe, debe crearlo primero');
           readkey;
      end;
+
      write(rxc,rxcreg);
      write(cli,c);
-     
+     writeln(filesize(rxc));
+     readkey;
 end;
 
 {============================================================================= LISTADO ============================================================================}
@@ -460,12 +462,6 @@ begin
      end;
 end;
 
-
-
-
-
-
-
 procedure RECAUDACION();
 var
 mes,i:integer;
@@ -495,6 +491,78 @@ begin
      end;
 end;
 
+procedure REINICIAR();
+var op: string;
+    opc,i,j,k,an,m:integer;
+begin
+    writeln('¿Esta seguro de reniciar los archivos? (S/N)');
+    repeat
+          read(op)
+    until (op = 's') or (op = 'n');
+    if op = 's' then
+    begin
+       writeln('¿Que archivo quiere borrar?');
+       writeln('1) Clientes');
+       writeln('2) Rutinas por Clientes');
+       repeat
+             read(opc);
+       until (opc >= 1) and (opc <= 2);
+       if opc = 1 then
+       begin
+          if filesize(cli) = 0 then
+             writeln('El archivo Clientes esta vacio')
+          else
+          begin
+             seek(cli,0);
+             for i:= 0 to filesize(cli) do
+             begin
+                 read(cli,c);
+                 for j:= 1 to 12 do
+                    for k:= 1 to 2 do
+                       begin
+                           c.pago_en_pesos_y_peso_actual[j,k]:= 0;
+                           write(cli,c);
+                       end;
+                 writeln('Archivo borrado con exito');
+                 readkey;
+             end;
+          end;
+       end
+       else
+       begin
+           if filesize(rxc) = 0 then
+              writeln('El archivo Rutinas por Clientes esta vacio')
+           else
+           begin
+               writeln('Ingrese el anio del registro que quiere borrar');
+               repeat
+                    readln(an)
+               until (an >= 1) and (an <= 3000);
+               writeln('Ingrese el mes del registro que quiere borrar');
+               repeat
+                     readln(m);
+               until (m >= 0) and (m <= 12);
+
+               seek(rxc,0);
+               repeat
+                    read(rxc,rxcreg);
+               until (eof(rxc)) or ((an=rxcreg.anio) and (m=rxcreg.mes));
+               if (an = rxcreg.anio) and (m = rxcreg.mes) then
+               begin
+                  rxcreg.borrado_logico:= true;
+                  write(rxc,rxcreg);
+                  readkey;
+               end
+               else
+               begin
+                   writeln('no existe el registro del año ingresado');
+                   readkey;
+               end;
+           end;
+       end;
+    end;
+end;
+
 procedure menu;
 var
    op:Integer;
@@ -519,7 +587,7 @@ begin
              3: RUTINAS();
              4: LISTADO();
              5: RECAUDACION();
-             {6: REINICIAR();}
+             6: REINICIAR();
           end;
           clrscr;
           writeln('Menu de opciones');
