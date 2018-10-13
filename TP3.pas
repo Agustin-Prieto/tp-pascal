@@ -92,18 +92,17 @@ begin
     writeln('2) Actividades');
     writeln('3) Dias y Horarios');
     writeln('4) Ejercicios por Rutinas');
-    writeln('5) Volver');
 
     repeat
        readln(op);
-    until (op >=1) and (op <=5);
+    until (op >=1) and (op <=4);
 
     while op <> 5 do
       begin
           case op of
              1: begin
                    writeln('¿Quiere crear/abrir el archivo o quiere modificar algun campo?');
-                   writeln('1) Dar de alta gimnasio');
+                   writeln('1) Dar de alta al nuevo gimnasio');
                    writeln('2) Modificar datos del gimnasio');
                    repeat
                         readln(op);
@@ -126,10 +125,9 @@ begin
                          repeat
                                readln(g.valor_personal_trainer);
                          until g.valor_nutricionista > 0;
-                         writeln();
-                         writeln('                         Datos de gimnasio agregados con exito!');
+
                          write(gim,g);
-                         readkey;
+
                       end
                    else
                       begin  {terminar}
@@ -142,7 +140,7 @@ begin
              2: begin
                    writeln('Ingrese el codigo de la actividad');
                    repeat
-                   readln(a.codigo_actividad);
+                         readln(a.codigo_actividad);
                    until a.codigo_actividad > 0;
                    writeln('Ingrese la descripcion de la actividad');
                    readln(a.descripcion_actividad);
@@ -160,6 +158,8 @@ begin
                     begin
                         for i:= 1 to 6 do
                         begin
+                            writeln('Ingrese el numero del dia (1: Lunes,...,6: Sabado)');
+                            readln(dyhreg.dia);
                             writeln('Ingrese la hora del dia ',i);
                             readln(dyhreg.hora);
                             writeln('Ingrese el codigo de la actividad');
@@ -167,6 +167,7 @@ begin
                                   readln(dyhreg.codigo_actividad);
                             until dyhreg.codigo_actividad > 0;
                             writeln();
+
                             write(dyh,dyhreg);
                             writeln('Datos del dia ',i,' guardados correctamente');
                             writeln(filesize(dyh));
@@ -174,7 +175,6 @@ begin
                         end;
                     end;
                  end;
-
              4:  begin
                     writeln('Ingrese el codigo de ejercicio');
                     repeat
@@ -194,7 +194,6 @@ begin
           writeln('2) Actividades');
           writeln('3) Dias y Horarios');
           writeln('4) Ejercicios por Rutinas');
-          writeln('5) Volver');
           repeat
              readln(op);
           until (op >=1) and (op <= 4);
@@ -382,124 +381,89 @@ begin
 end;
 
 {============================================================================= LISTADO ============================================================================}
-
-{procedure LISTADO();
-var i,verif: integer;
+function acti(e:integer):string;
 begin
-     clrscr;
-     if filesize(gim) > 0 then
+    if filesize(act) = 0 then
+        acti:= 'No hay descripcion de actividad'
+     else
      begin
-        read(gim,g);
-        writeln('Datos del Gimnasio');
-        writeln('    Nombre: ',g.nombre);
-        writeln('    Cuota: $',g.valor_cuota);
-        writeln('    Nutricionista: $',g.valor_nutricionista);
-        writeln('    Personal Trainer: $',g.valor_personal_trainer);
-        writeln();
+          seek(act,e-1);
+          read(act,a);
+          acti:= a.descripcion_actividad;
+     end;
+end;
+
+procedure LISTADO();
+var i:integer;
+begin
+     if filesize(gim) > 0 then
+        read(gim,g)
+     else
+         writeln('No hay informacion acerca del gimnasio');
+
+     writeln('Gimnasio $',g.nombre);
+     writeln('Valor de la cuota: $',g.valor_cuota);
+     writeln('Valor del nutricionista: $',g.valor_nutricionista);
+     writeln('Valor del personal trainer: $',g.valor_personal_trainer);
+     writeln();
+     if filesize(dyh) = 0 then
+     begin
+        writeln('No hay informacion acerca de dias y horarios');
+        readkey;
      end
      else
-         writeln('No hay datos del gimnasio');
-          read(dyh,dyhreg);
-          seek(dyh,0);
-          if filesize(dyh) = 0 then
-          begin
-               writeln('No hay informacion de dias y horarios');
-               readkey;
-          end
-          else
-          begin
-               readkey;
-               read(act,a);
-               if filesize(act) = 0 then
-                  verif:= 0
-               else
-                  verif:= 1;
+     begin
+         seek(dyh,0);
+         for i:= 0 to filesize(dyh) do
+         begin
+            read(dyh,dyhreg);
+            case i of
+                0: begin
+                     writeln('      Dia: Lunes');
+                     writeln('      Hora: ',dyhreg.hora);
+                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                     writeln();
+                   end;
+                1: begin
+                     writeln('      Dia: Martes');
+                     writeln('      Hora: ',dyhreg.hora);
+                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                     writeln();
+                   end;
+                2: begin
+                     writeln('      Dia: Martes');
+                     writeln('      Hora: ',dyhreg.hora);
+                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                     writeln();
+                   end;
+                3: begin
+                     writeln('      Dia: Martes');
+                     writeln('      Hora: ',dyhreg.hora);
+                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                     writeln();
+                   end;
+                4: begin
+                     writeln('      Dia: Martes');
+                     writeln('      Hora: ',dyhreg.hora);
+                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                     writeln();
+                   end;
+                5: begin
+                     writeln('      Dia: Martes');
+                     writeln('      Hora: ',dyhreg.hora);
+                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                     writeln();
+                     readkey;
+                   end;
+            end;
+         end;
+     end;
+end;
 
-               for i:= 0 to filesize(dyh) -1 do
-               begin
-                    case i of
-                        0: begin
-                                seek(dyh,i);
-                                writeln('Dia: Lunes');
-                                writeln('Hora: ',dyhreg.hora);
 
-                                if verif = 0 then
-                                   writeln('Actividad: No hay informacion acerca de la actividad de este dia')
-                                else
-                                begin
-                                    seek(act,(dyhreg.codigo_actividad - 1));
-                                    writeln('Actividad: ',a.descripcion_actividad);
-                                end;
-                           end;
-                        1: begin
 
-                                writeln('Dia: Martes');
-                                seek(dyh,(i-1));
-                                writeln('Hora: ',dyhreg.hora);
-                                if verif = 0 then
-                                   writeln('Actividad: No hay informacion hacerca de la actividad de este dia')
-                                else
-                                begin
-                                    seek(act,(dyhreg.codigo_actividad - 1));
-                                    writeln('Actividad: ',a.descripcion_actividad);
-                                end;
-                           end;
-                        2: begin
-                                seek(dyh,(i-1));
-                                writeln('Dia: Miercoles');
-                                writeln('Hora: ',dyhreg.hora);
-                                if verif = 0 then
-                                   writeln('Actividad: No hay informacion hacerca de la actividad de este dia')
-                                else
-                                begin
-                                    seek(act,(dyhreg.codigo_actividad - 1));
-                                    writeln('Actividad: ',a.descripcion_actividad);
-                                end;
-                           end;
-                        3: begin
-                                seek(dyh,(i-1));
-                                writeln('Dia: Jueves');
-                                writeln('Hora: ',dyhreg.hora);
-                                if verif = 0 then
-                                   writeln('Actividad: No hay informacion hacerca de la actividad de este dia')
-                                else
-                                begin
-                                    seek(act,(dyhreg.codigo_actividad - 1));
-                                    writeln('Actividad: ',a.descripcion_actividad);
-                                end;
-                           end;
-                        4: begin
-                                seek(dyh,(i-1));
-                                writeln('Dia: Viernes');
-                                writeln('Hora: ',dyhreg.hora);
-                                if verif = 0 then
-                                   writeln('Actividad: No hay informacion hacerca de la actividad de este dia')
-                                else
-                                begin
-                                    seek(act,(dyhreg.codigo_actividad - 1));
-                                    writeln('Actividad: ',a.descripcion_actividad);
-                                end;
-                           end;
-                        5: begin
-                                seek(dyh,(i-1));
-                                writeln('Dia: Sabado');
-                                writeln('Hora: ',dyhreg.hora);
-                                if verif = 0 then
-                                   writeln('Actividad: No hay informacion hacerca de la actividad de este dia')
-                                else
-                                begin
-                                    seek(act,(dyhreg.codigo_actividad - 1));
-                                    writeln('Actividad: ',a.descripcion_actividad);
-                                end;
-                           end;
-                    end;
-               end;
-          end;
-       end;
-       begin
-       end;
 
-end;   }
+
 
 
 procedure RECAUDACION();
@@ -553,8 +517,9 @@ begin
              1: ABM();
              2: CLIENT();
              3: RUTINAS();
-             4: {LISTADO()}writeln('hola');
+             4: LISTADO();
              5: RECAUDACION();
+             {6: REINICIAR();}
           end;
           clrscr;
           writeln('Menu de opciones');
