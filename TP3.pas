@@ -79,7 +79,9 @@ begin
                   secuencial_cli:=-1;
          end;
 end;
+
 {==============================================================================ABM================================================================================}
+
 procedure ABM;
 var
     op,i: Integer;
@@ -95,12 +97,13 @@ begin
 
     repeat
        readln(op);
-    until (op >=1) and (op <=4);
+    until (op >=1) and (op <=5);
 
     while op <> 5 do
       begin
           case op of
              1: begin
+                   clrscr;
                    writeln('¿Quiere crear/abrir el archivo o quiere modificar algun campo?');
                    writeln('1) Dar de alta al nuevo gimnasio');
                    writeln('2) Modificar datos del gimnasio');
@@ -109,6 +112,7 @@ begin
                    until (op >= 1) and (op <= 2);
                    if op = 1 then
                       begin
+                         clrscr;
                          writeln('Ingrese el nombre');
                          readln(g.nombre);
                          writeln('Ingrese la direccion');
@@ -134,10 +138,12 @@ begin
                          writeln('Ingrese un nuevo valor para el valor de la cuota');
                          writeln('Ingrese un nuevo valor para el valor del nutricionista');
                          writeln('Ingrese un nuevo valor para el valor del personal trainer');
+                         readkey;
                       end;
                 end;
 
              2: begin
+                   clrscr;
                    writeln('Ingrese el codigo de la actividad');
                    repeat
                          readln(a.codigo_actividad);
@@ -149,6 +155,7 @@ begin
                 end;
 
              3:  begin
+                    clrscr;
                     if filesize(dyh) = 6 then
                     begin
                        writeln('El archivo dias y horarios ya esta completado');
@@ -158,6 +165,7 @@ begin
                     begin
                         for i:= 1 to 6 do
                         begin
+                            clrscr;
                             writeln('Ingrese el numero del dia (1: Lunes,...,6: Sabado)');
                             readln(dyhreg.dia);
                             writeln('Ingrese la hora del dia ',i);
@@ -170,12 +178,12 @@ begin
 
                             write(dyh,dyhreg);
                             writeln('Datos del dia ',i,' guardados correctamente');
-                            writeln(filesize(dyh));
                             readkey;
                         end;
                     end;
                  end;
              4:  begin
+                    clrscr;
                     writeln('Ingrese el codigo de ejercicio');
                     repeat
                           readln(exrreg.codigo_ejercicio);
@@ -220,11 +228,8 @@ begin
      end;
      writeln('Ingrese el DNI: ');
      readln(dni);
-     {writeln('Filesize: ', filesize(cli));}
      busqueda:=secuencial_cli(dni);
-     {writeln('Filesize actual ',filesize(cli));
-     writeln('Secuencial: ', busqueda);}
-     if busqueda > -1 then                                {Si la busqueda devuelve mas de 0, quiere decir que se encontro el cliente}
+     if busqueda > -1 then                                {Si la busqueda devuelve mas de -1, quiere decir que se encontro el cliente}
      begin
           if c.pago_en_pesos_y_peso_actual[mes,1] = 0 then                   {Si esta condicion es verdadera, significa que debe este mes}
           begin
@@ -238,6 +243,7 @@ begin
                      readln(c.personal_sn);
                until (c.personal_sn='s') or (c.personal_sn='n');
                writeln('Desea pagar el mes actual? (S/N)');
+               readln(deuda);
                repeat
                      readln(deuda);
                until (deuda='s') or (deuda='n');
@@ -264,7 +270,7 @@ begin
                readkey;
           end;
      end;
-     if busqueda = -1 then
+     if busqueda = -1 then                                                                    {Si la busqueda devuelve -1, quiere decir que el cliente no existe}
      begin
           clrscr;
           writeln('El cliente con DNI ( ',dni,' ) no pertenece a nuestros clientes');
@@ -314,24 +320,19 @@ busqueda,mes,act,i,rep:integer;
 pact:real;
 op:char;
 begin
+     if (filesize(rxc)>0) and (filesize(cli)>0) then
+     begin
      clrscr;
      pact:=0;
      mes:=0;
-     if filesize(cli)>0 then
-     begin
-          read(cli,c);
-     end;
      write('Ingrese DNI del cliente: ');
      readln(dni);
      busqueda:=secuencial_cli(dni);
-     if filesize(rxc)=0 then
-     begin
-          read(rxc,rxcreg);
-     end;
-     seek(rxc,busqueda);
-     seek(cli,busqueda);
+     if filesize(rxc)>0 then
      if (busqueda>=0) and (rxcreg.borrado_logico=false) then
      begin
+          seek(rxc,busqueda);
+          seek(cli,busqueda);
           write('Mes: ');
           repeat
                 readln(rxcreg.mes);
@@ -339,7 +340,7 @@ begin
           write('Año: ');
           repeat
                 readln(rxcreg.anio);
-          until (rxcreg.anio<2100)and(rxcreg.anio>2000);
+          until (rxcreg.anio<3000)and(rxcreg.anio>1);
           repeat
           begin
                clrscr;
@@ -363,12 +364,15 @@ begin
           until(op='n') or (op='s');
           end;
           until op='n';
-          writeln('Debe actualizar el peso del cliente: ',c.pago_en_pesos_y_peso_actual[mes,2]:5:3,' Kg');
+          writeln('Debe actualizar el peso del cliente: ');
           repeat
                 readln(pact);
           until pact>0;
           c.pago_en_pesos_y_peso_actual[mes,2]:= pact;
+          write(rxc,rxcreg);
+          write(cli,c);
 
+     end;
      end;
      if busqueda<0 then
      begin
@@ -376,13 +380,10 @@ begin
           readkey;
      end;
 
-     write(rxc,rxcreg);
-     write(cli,c);
-     writeln(filesize(rxc));
-     readkey;
 end;
 
 {============================================================================= LISTADO ============================================================================}
+
 function acti(e:integer):string;
 begin
     if filesize(act) = 0 then
@@ -396,71 +397,77 @@ begin
 end;
 
 procedure LISTADO();
-var i:integer;
+var
+   i,k:integer;
 begin
-     if filesize(gim) > 0 then
-        read(gim,g)
-     else
-         writeln('No hay informacion acerca del gimnasio');
+     if (filesize(gim)>0) and (filesize(dyh)>0) then
+     begin
+          read(gim,g);
+          read(dyh);
+          for i:= 0 to filesize(dyh)-1 do
+          begin
+               clrscr;
+               writeln('Gimnasio: ',g.nombre);
+               writeln('Valor de la cuota: ',g.valor_cuota:5:2,' $');
+               writeln('Valor del nutricionista: ',g.valor_nutricionista:5:2,' $');
+               writeln('Valor del personal trainer: ',g.valor_personal_trainer:5:2,' $');
+               seek(dyh,i);
+               seek(gim,i);
+               for k:=0 to 6 do
+               begin
+                    case k of
 
-     writeln('Gimnasio $',g.nombre);
-     writeln('Valor de la cuota: $',g.valor_cuota);
-     writeln('Valor del nutricionista: $',g.valor_nutricionista);
-     writeln('Valor del personal trainer: $',g.valor_personal_trainer);
-     writeln();
-     if filesize(dyh) = 0 then
-     begin
-        writeln('No hay informacion acerca de dias y horarios');
-        readkey;
-     end
-     else
-     begin
-         seek(dyh,0);
-         for i:= 0 to filesize(dyh) do
-         begin
-            read(dyh,dyhreg);
-            case i of
-                0: begin
-                     writeln('      Dia: Lunes');
-                     writeln('      Hora: ',dyhreg.hora);
-                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
-                     writeln();
-                   end;
-                1: begin
-                     writeln('      Dia: Martes');
-                     writeln('      Hora: ',dyhreg.hora);
-                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
-                     writeln();
-                   end;
-                2: begin
-                     writeln('      Dia: Martes');
-                     writeln('      Hora: ',dyhreg.hora);
-                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
-                     writeln();
-                   end;
-                3: begin
-                     writeln('      Dia: Martes');
-                     writeln('      Hora: ',dyhreg.hora);
-                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
-                     writeln();
-                   end;
-                4: begin
-                     writeln('      Dia: Martes');
-                     writeln('      Hora: ',dyhreg.hora);
-                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
-                     writeln();
-                   end;
-                5: begin
-                     writeln('      Dia: Martes');
-                     writeln('      Hora: ',dyhreg.hora);
-                     writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
-                     writeln();
-                     readkey;
-                   end;
-            end;
-         end;
+                         0: begin
+                                 writeln('      Dia: Lunes');
+                                 writeln('      Hora: ',dyhreg.hora);
+                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
+                                 writeln();
+                            end;
+                         1: begin
+                                 writeln('      Dia: Martes');
+                                 writeln('      Hora: ',dyhreg.hora);
+                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
+                                 writeln();
+                            end;
+                         2: begin
+                                 writeln('      Dia: Miercoles');
+                                 writeln('      Hora: ',dyhreg.hora);
+                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
+                                 writeln();
+                            end;
+                         3: begin
+                                 writeln('      Dia: Jueves');
+                                 writeln('      Hora: ',dyhreg.hora);
+                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
+                                 writeln();
+                            end;
+                         4: begin
+                                 writeln('      Dia: Viernes');
+                                 writeln('      Hora: ',dyhreg.hora);
+                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
+                                 writeln();
+                            end;
+                         5: begin
+                                 writeln('      Dia: Sabado');
+                                 writeln('      Hora: ',dyhreg.hora);
+                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
+                                 writeln();
+                            end;
+                    end;
+               end;
+               readkey();
+          end;
+      if (filesize(gim)=0) or (filesize(dyh)=0) then
+      begin
+           writeln('No hay datos ningun gimnasio o de horarios');
+           readkey;
+      end;
      end;
 end;
+
+
+
+{===========================================================================RECAUDACION=========================================================================}
 
 procedure RECAUDACION();
 var
@@ -491,10 +498,13 @@ begin
      end;
 end;
 
+{===========================================================================REINICIAR=============================================================================}
+
 procedure REINICIAR();
 var op: string;
     opc,i,j,k,an,m:integer;
 begin
+    clrscr;
     writeln('¿Esta seguro de reniciar los archivos? (S/N)');
     repeat
           read(op)
@@ -509,6 +519,7 @@ begin
        until (opc >= 1) and (opc <= 2);
        if opc = 1 then
        begin
+          clrscr;
           if filesize(cli) = 0 then
              writeln('El archivo Clientes esta vacio')
           else
@@ -523,6 +534,7 @@ begin
                            c.pago_en_pesos_y_peso_actual[j,k]:= 0;
                            write(cli,c);
                        end;
+                 clrscr;
                  writeln('Archivo borrado con exito');
                  readkey;
              end;
@@ -530,10 +542,12 @@ begin
        end
        else
        begin
+           clrscr;
            if filesize(rxc) = 0 then
               writeln('El archivo Rutinas por Clientes esta vacio')
            else
            begin
+               clrscr;
                writeln('Ingrese el anio del registro que quiere borrar');
                repeat
                     readln(an)
@@ -555,6 +569,7 @@ begin
                end
                else
                begin
+                   clrscr;
                    writeln('no existe el registro del año ingresado');
                    readkey;
                end;
@@ -562,6 +577,8 @@ begin
        end;
     end;
 end;
+
+{=============================================================================MENU==============================================================================}
 
 procedure menu;
 var
@@ -603,6 +620,10 @@ begin
           until (op >=1) and (op <= 6);
       end;
 end;
+
+
+{================================================================APERTURA Y ASIGNAMIENTO DE ARCHIVOS====================================================================}
+
 
 begin
      assign(gim,'C:\TP3\gimnasio.dat');
