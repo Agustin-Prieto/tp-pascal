@@ -134,11 +134,41 @@ begin
 
                       end
                    else
+<<<<<<< HEAD
                       begin  {terminar}
                          writeln('Ingrese un nuevo valor para el valor de la cuota');
                          writeln('Ingrese un nuevo valor para el valor del nutricionista');
                          writeln('Ingrese un nuevo valor para el valor del personal trainer');
                          readkey;
+=======
+                   begin
+                        if filesize(gim) = 0 then
+                        begin
+                             writeln('No existe ningun gimnasio guardado, debe dar de alta un nuevo gimnasio');
+                             readkey;
+                        end
+                        else
+                        begin
+                             seek(gim,0);
+                             read(gim,g);
+                             writeln('Ingrese valor de la cuota actualizado');
+                             repeat
+                                   readln(g.valor_cuota);
+                             until (g.valor_cuota > 0);
+                             writeln('Ingrese valor del nutricionista actualizado');
+                             repeat
+                                   readln(g.valor_nutricionista);
+                             until (g.valor_nutricionista > 0);
+                             writeln('Ingrese nuevo valor de personal trainer actualizado');
+                             repeat
+                                   readln(g.valor_personal_trainer);
+                             until (g.valor_personal_trainer > 0);
+
+                             write(gim,g);
+                             writeln('Gimnasio actualizado con exito');
+                             readkey;
+                         end;
+>>>>>>> 9eab610b69db31dafc52870ec7578a539087ce32
                       end;
                 end;
 
