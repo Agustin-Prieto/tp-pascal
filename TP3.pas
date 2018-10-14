@@ -603,6 +603,18 @@ begin
     end;
 end;
 
+procedure SALIR();
+begin
+    close(gim);
+    close(act);
+    close(dyh);
+    close(exr);
+    close(cli);
+    close(rxc);
+    writeln('Archivos cerrados correctamente');
+    readkey;
+end;
+
 {=============================================================================MENU==============================================================================}
 
 procedure menu;
@@ -616,12 +628,13 @@ begin
     writeln('4) Listado de dias y horarios');
     writeln('5) Recaudacion');
     writeln('6) Reiniciar (blanqueo)');
+    writeln('7) Cerrar archivos');
 
     repeat
        readln(op);
-    until (op >=1) and (op <=6);
+    until (op >=1) and (op <=7);
 
-    while op <> 7 do
+    while op <> 8 do
       begin
           case op of
              1: ABM();
@@ -630,6 +643,7 @@ begin
              4: LISTADO();
              5: RECAUDACION();
              6: REINICIAR();
+             7: SALIR();
           end;
           clrscr;
           writeln('Menu de opciones');
@@ -639,10 +653,11 @@ begin
           writeln('4) Listado de dias y horarios');
           writeln('5) Recaudacion');
           writeln('6) Reiniciar (blanqueo)');
+          writeln('7) Salir');
 
           repeat
              readln(op);
-          until (op >=1) and (op <= 6);
+          until (op >=1) and (op <= 7);
       end;
 end;
 
