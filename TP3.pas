@@ -403,9 +403,10 @@ begin
      if (filesize(gim)>0) and (filesize(dyh)>0) then
      begin
           i:=0;
-          read(gim);
           seek(gim,0);
-          read(dyh);
+          seek(dyh,0);
+          read(gim,g);
+          read(dyh,dyhreg);
           clrscr();
           writeln('Gimnasio: ',g.nombre);
           writeln('Valor de la cuota: ',g.valor_cuota:0:2,'$');
