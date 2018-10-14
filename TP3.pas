@@ -134,13 +134,6 @@ begin
 
                       end
                    else
-<<<<<<< HEAD
-                      begin  {terminar}
-                         writeln('Ingrese un nuevo valor para el valor de la cuota');
-                         writeln('Ingrese un nuevo valor para el valor del nutricionista');
-                         writeln('Ingrese un nuevo valor para el valor del personal trainer');
-                         readkey;
-=======
                    begin
                         if filesize(gim) = 0 then
                         begin
@@ -168,7 +161,6 @@ begin
                              writeln('Gimnasio actualizado con exito');
                              readkey;
                          end;
->>>>>>> 9eab610b69db31dafc52870ec7578a539087ce32
                       end;
                 end;
 
@@ -420,80 +412,83 @@ begin
         acti:= 'No hay descripcion de actividad'
      else
      begin
-          seek(act,e-1);
           read(act,a);
+          seek(act,e);
           acti:= a.descripcion_actividad;
      end;
 end;
 
 procedure LISTADO();
 var
-   i,k:integer;
+i:integer;
 begin
      if (filesize(gim)>0) and (filesize(dyh)>0) then
      begin
+          i:=0;
+          seek(gim,0);
+          seek(dyh,0);
           read(gim,g);
-          read(dyh);
-          for i:= 0 to filesize(dyh)-1 do
+          read(dyh,dyhreg);
+          clrscr();
+          writeln('Gimnasio: ',g.nombre);
+          writeln('Valor de la cuota: ',g.valor_cuota:0:2,'$');
+          writeln('Valor del Nutricionista: ',g.valor_nutricionista:0:2,'$');
+          writeln('Valor del Personal Trainer: ',g.valor_personal_trainer:0:2,'$');
+          writeln();
+          for i:=0 to 5 do
           begin
-               clrscr;
-               writeln('Gimnasio: ',g.nombre);
-               writeln('Valor de la cuota: ',g.valor_cuota:5:2,' $');
-               writeln('Valor del nutricionista: ',g.valor_nutricionista:5:2,' $');
-               writeln('Valor del personal trainer: ',g.valor_personal_trainer:5:2,' $');
                seek(dyh,i);
-               seek(gim,i);
-               for k:=0 to 6 do
-               begin
-                    case k of
-
-                         0: begin
-                                 writeln('      Dia: Lunes');
-                                 writeln('      Hora: ',dyhreg.hora);
-                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
-                                 writeln();
-                            end;
-                         1: begin
-                                 writeln('      Dia: Martes');
-                                 writeln('      Hora: ',dyhreg.hora);
-                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
-                                 writeln();
-                            end;
-                         2: begin
-                                 writeln('      Dia: Miercoles');
-                                 writeln('      Hora: ',dyhreg.hora);
-                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
-                                 writeln();
-                            end;
-                         3: begin
-                                 writeln('      Dia: Jueves');
-                                 writeln('      Hora: ',dyhreg.hora);
-                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
-                                 writeln();
-                            end;
-                         4: begin
-                                 writeln('      Dia: Viernes');
-                                 writeln('      Hora: ',dyhreg.hora);
-                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
-                                 writeln();
-                            end;
-                         5: begin
-                                 writeln('      Dia: Sabado');
-                                 writeln('      Hora: ',dyhreg.hora);
-                                 writeln('      Actividad: ',dyhreg.codigo_actividad);
-                                 writeln();
-                            end;
-                    end;
+               case i of
+               0:begin
+                      writeln('      Dia: Lunes');
+                      writeln('      Hora: ',dyhreg.hora);
+                      writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                      writeln();
+                 end;
+               1:begin
+                      writeln('      Dia: Martes');
+                      writeln('      Hora: ',dyhreg.hora);
+                      writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                      writeln();
+                 end;
+               2:begin
+                      writeln('      Dia: Miercoles');
+                      writeln('      Hora: ',dyhreg.hora);
+                      writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                      writeln();
+                 end;
+               3:begin
+                      writeln('      Dia: Jueves');
+                      writeln('      Hora: ',dyhreg.hora);
+                      writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                      writeln();
+                 end;
+               4:begin
+                      writeln('      Dia: Viernes');
+                      writeln('      Hora: ',dyhreg.hora);
+                      writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                      writeln();
+                 end;
+               5:begin
+                      writeln('      Dia: Sabado');
+                      writeln('      Hora: ',dyhreg.hora);
+                      writeln('      Actividad: ',acti(dyhreg.codigo_actividad));
+                      writeln();
+                 end;
                end;
-               readkey();
           end;
-      if (filesize(gim)=0) or (filesize(dyh)=0) then
-      begin
-           writeln('No hay datos ningun gimnasio o de horarios');
-           readkey;
-      end;
+          readkey;
+     end;
+
+     if (filesize(gim)=0) or (filesize(dyh)=0) then
+     begin
+          writeln('No hay registros sobre el gimnasio');
+          readkey;
      end;
 end;
+
+
+
 
 
 
